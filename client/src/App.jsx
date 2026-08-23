@@ -1,6 +1,14 @@
 import "./App.css";
+import Lobby from "./pages/Lobby";
+import { useState } from "react";
 
 function App() {
+  const [screen, setScreen] = useState("home");
+
+  if (screen === "lobby") {
+    return <Lobby onBack={() => setScreen("home")} />;
+  }
+
   return (
     <div className="app">
       <header className="topbar">
@@ -57,9 +65,7 @@ function App() {
           <div className="title-section">
             <p className="eyebrow">WELCOME TO</p>
 
-            <h1>
-              CLASH
-            </h1>
+            <h1>CLASH</h1>
 
             <div className="tagline">
               CAPTURE. SCORE. WIN.
@@ -89,7 +95,10 @@ function App() {
             <div className="ground-flower flower-three">🌻</div>
           </div>
 
-          <button className="play-button">
+          <button
+            className="play-button"
+            onClick={() => setScreen("lobby")}
+          >
             <span>▶</span>
             PLAY NOW
           </button>
