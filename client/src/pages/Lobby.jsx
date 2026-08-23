@@ -1,12 +1,50 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
 import "./Lobby.css";
+
+const socket = io("http://localhost:5000");
 
 const Lobby = ({ onBack }) => {
   const [searching, setSearching] = useState(false);
+  const [opponent, setOpponent] = useState(null);
 
   const findMatch = () => {
     setSearching(true);
+    setOpponent(null);
+
+    socket.emit("find_match", {
+      name: "PuffyBear",
+      level: 23,
+      avatar: "🐻",
+    });
   };
+
+  const cancelMatch = () => {
+    socket.emit("cancel_match");
+    setSearching(false);
+    setOpponent(null);
+  };
+
+  useEffect(() => {
+    const handleMatchFound = (match) => {
+      console.log("MATCH FOUND!", match);
+
+      setSearching(false);
+
+      const foundOpponent =
+        socket.id === match.player1.socketId
+          ? match.player2
+          : match.player1;
+
+      setOpponent(foundOpponent);
+    };
+
+    socket.on("match_found", handleMatchFound);
+
+    return () => {
+      socket.off("match_found", handleMatchFound);
+    };
+  }, []);
 
   return (
     <div className="lobby">
@@ -17,6 +55,7 @@ const Lobby = ({ onBack }) => {
 
         <div className="lobby-player">
           <div className="lobby-avatar">🐻</div>
+
           <div>
             <strong>PuffyBear</strong>
             <span>Level 23</span>
@@ -34,6 +73,7 @@ const Lobby = ({ onBack }) => {
         </p>
 
         <div className="players">
+         
           <div className="player-card you">
             <div className="player-character">🐻</div>
 
@@ -46,12 +86,18 @@ const Lobby = ({ onBack }) => {
             <div className="status ready">READY</div>
           </div>
 
+        
           <div className="versus">
             <div>VS</div>
             <span>✦</span>
           </div>
 
-          <div className={`player-card opponent ${searching ? "searching" : ""}`}>
+          
+          <div
+            className={`player-card opponent ${
+              searching ? "searching" : ""
+            } ${opponent ? "found" : ""}`}
+          >
             {searching ? (
               <>
                 <div className="search-icon">🔎</div>
@@ -68,6 +114,20 @@ const Lobby = ({ onBack }) => {
                   <span>.</span>
                 </div>
               </>
+            ) : opponent ? (
+              <>
+                <div className="player-character">
+                  {opponent.avatar}
+                </div>
+
+                <div className="player-info">
+                  <span className="label">OPPONENT</span>
+                  <h2>{opponent.name}</h2>
+                  <p>Level {opponent.level}</p>
+                </div>
+
+                <div className="status ready">FOUND</div>
+              </>
             ) : (
               <>
                 <div className="question-character">?</div>
@@ -82,20 +142,29 @@ const Lobby = ({ onBack }) => {
           </div>
         </div>
 
-        <button
-          className="find-button"
-          onClick={findMatch}
-          disabled={searching}
-        >
-          {searching ? "SEARCHING..." : "🔎 FIND MATCH"}
-        </button>
-
-        {searching && (
+        {!opponent && (
           <button
-            className="cancel-button"
-            onClick={() => setSearching(false)}
+            className="find-button"
+            onClick={findMatch}
+            disabled={searching}
           >
+            {searching ? "SEARCHING..." : "🔎 FIND MATCH"}
+          </button>
+        )}
+        {searching && (
+          <button className="cancel-button" onClick={cancelMatch}>
             Cancel
+          </button>
+        )}
+
+        {opponent && (
+          <button
+            className="find-button"
+            onClick={() => {
+              console.log("Starting battle...");
+            }}
+          >
+            ⚔️ START BATTLE
           </button>
         )}
 

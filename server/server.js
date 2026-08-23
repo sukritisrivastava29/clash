@@ -6,15 +6,18 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
+const PORT = 5000;
+const CLIENT_URL = "http://localhost:5175";
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: CLIENT_URL,
   })
 );
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5173",
+    origin: CLIENT_URL,
     methods: ["GET", "POST"],
   },
 });
@@ -33,11 +36,18 @@ io.on("connection", (socket) => {
       const roomId = `${opponent.socketId}-${socket.id}`;
 
       socket.join(roomId);
-      io.sockets.sockets.get(opponent.socketId)?.join(roomId);
+
+      const opponentSocket = io.sockets.sockets.get(opponent.socketId);
+
+      if (opponentSocket) {
+        opponentSocket.join(roomId);
+      }
 
       io.to(roomId).emit("match_found", {
         roomId,
+
         player1: opponent,
+
         player2: {
           socketId: socket.id,
           name: player.name,
@@ -88,6 +98,6 @@ app.get("/", (req, res) => {
   res.send("Clash server is running!");
 });
 
-server.listen(5000, () => {
-  console.log("Clash server running on http://localhost:5000");
+server.listen(PORT, () => {
+  console.log(`Clash server running on http://localhost:${PORT}`);
 });
