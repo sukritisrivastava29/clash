@@ -1,29 +1,110 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
-import Heroes from "./pages/Heroes";
-import Rank from "./pages/Rank";
-import Friends from "./pages/Friends";
+
 import Lobby from "./pages/Lobby";
 import Battle from "./pages/Battle";
 import Shop from "./pages/Shop";
+import Heroes from "./pages/Heroes";
+import Rank from "./pages/Rank";
+import Friends from "./pages/Friends";
+
+const defaultPlayer = {
+  name: "PuffyBear",
+  level: 23,
+  coins: 8450,
+  gems: 1280,
+  score: 8450,
+  selectedHero: "puffy",
+
+  heroes: {
+    puffy: {
+      unlocked: true,
+      level: 5,
+    },
+    bunny: {
+      unlocked: true,
+      level: 3,
+    },
+    fox: {
+      unlocked: true,
+      level: 2,
+    },
+    panda: {
+      unlocked: false,
+      level: 1,
+    },
+    kitty: {
+      unlocked: false,
+      level: 1,
+    },
+  },
+
+  inventory: [],
+};
 
 function App() {
   const [screen, setScreen] = useState("home");
+
+  const [player, setPlayer] = useState(() => {
+    const savedPlayer = localStorage.getItem("clashPlayer");
+
+    return savedPlayer
+      ? JSON.parse(savedPlayer)
+      : defaultPlayer;
+  });
+
   const [match, setMatch] = useState(null);
-if (screen === "heroes") {
-  return <Heroes onBack={() => setScreen("home")} />;
-}
 
-if (screen === "rank") {
-  return <Rank onBack={() => setScreen("home")} />;
-}
+  useEffect(() => {
+    localStorage.setItem("clashPlayer", JSON.stringify(player));
+  }, [player]);
 
-if (screen === "friends") {
-  return <Friends onBack={() => setScreen("home")} />;
-}
+  if (screen === "shop") {
+    return (
+      <Shop
+        player={player}
+        setPlayer={setPlayer}
+        onBack={() => setScreen("home")}
+      />
+    );
+  }
+
+
+  if (screen === "heroes") {
+    return (
+      <Heroes
+        player={player}
+        setPlayer={setPlayer}
+        onBack={() => setScreen("home")}
+      />
+    );
+  }
+
+ 
+  if (screen === "rank") {
+    return (
+      <Rank
+        player={player}
+        onBack={() => setScreen("home")}
+      />
+    );
+  }
+
+
+  if (screen === "friends") {
+    return (
+      <Friends
+        player={player}
+        onBack={() => setScreen("home")}
+      />
+    );
+  }
+
+
   if (screen === "lobby") {
     return (
       <Lobby
+        player={player}
         onBack={() => setScreen("home")}
         onBattle={(matchData) => {
           setMatch(matchData);
@@ -32,133 +113,95 @@ if (screen === "friends") {
       />
     );
   }
-  if (screen === "shop") {
-    return (
-      <Shop
-        onBack={() => setScreen("home")}
-      />
-    );
-  }
+
 
   if (screen === "battle") {
     return (
       <Battle
         match={match}
+        player={player}
+        setPlayer={setPlayer}
         onBack={() => setScreen("lobby")}
       />
     );
   }
 
+
   return (
     <div className="app">
+
       <header className="topbar">
+
         <div className="profile">
           <div className="avatar">🐻</div>
 
           <div>
-            <h3>PuffyBear</h3>
-            <span>Level 23</span>
+            <h3>{player.name}</h3>
+            <span>Level {player.level}</span>
           </div>
         </div>
 
         <div className="currencies">
+
           <div className="currency">
-            ⭐ <span>8450</span>
+            ⭐ <span>{player.coins}</span>
           </div>
 
           <div className="currency">
-            💎 <span>1280</span>
+            💎 <span>{player.gems}</span>
           </div>
 
-          <button className="settings">⚙</button>
+          <button className="settings">
+            ⚙
+          </button>
+
         </div>
+
       </header>
 
       <main className="home">
+
         <aside className="sidebar">
-          <button className="menu-button active">
+
+          <button
+            className="menu-button active"
+            onClick={() => setScreen("home")}
+          >
             🎮 <span>PLAY</span>
           </button>
 
-         <button
-  className="menu-button"
-  onClick={() => setScreen("shop")}
->
-  🛒 <span>SHOP</span>
-</button>
-
-       <button
-  className="menu-button"
-  onClick={() => setScreen("heroes")}
->
-  🐻 <span>HEROES</span>
-</button>
-
-        <button
-  className="menu-button"
-  onClick={() => setScreen("rank")}
->
-  🏆 <span>RANK</span>
-</button>
-         <button
-  className="menu-button"
-  onClick={() => setScreen("friends")}
->
-  👥 <span>FRIENDS</span>
-</button>
-        </aside>
-
-        <section className="hero">
-          <div className="floating star star-one">⭐</div>
-          <div className="floating star star-two">✦</div>
-          <div className="floating flower">🌸</div>
-
-          <div className="title-section">
-            <p className="eyebrow">WELCOME TO</p>
-
-            <h1>CLASH</h1>
-
-            <div className="tagline">
-              CAPTURE. SCORE. WIN.
-            </div>
-          </div>
-
-          <div className="arena-preview">
-            <div className="cloud cloud-one">☁️</div>
-            <div className="cloud cloud-two">☁️</div>
-
-            <div className="character bear">
-              🐻
-              <span className="flag purple">💜</span>
-            </div>
-
-            <div className="core">
-              <span>⭐</span>
-            </div>
-
-            <div className="character bunny">
-              🐰
-              <span className="flag pink">💗</span>
-            </div>
-
-            <div className="ground-flower flower-one">🌼</div>
-            <div className="ground-flower flower-two">🌷</div>
-            <div className="ground-flower flower-three">🌻</div>
-          </div>
-
           <button
-            className="play-button"
-            onClick={() => setScreen("lobby")}
+            className="menu-button"
+            onClick={() => setScreen("shop")}
           >
-            <span>▶</span>
-            PLAY NOW
+            🛒 <span>SHOP</span>
           </button>
 
-          <p className="subtitle">
-            Jump into the arena and challenge another player!
-          </p>
-        </section>
-      </main>
+          <button
+            className="menu-button"
+            onClick={() => setScreen("heroes")}
+          >
+            🐻 <span>HEROES</span>
+          </button>
+
+          <button
+            className="menu-button"
+            onClick={() => setScreen("rank")}
+          >
+            🏆 <span>RANK</span>
+          </button>
+
+          <button
+            className="menu-button"
+            onClick={() => setScreen("friends")}
+          >
+            👥 <span>FRIENDS</span>
+          </button>
+
+        </aside>
+
+        
+
     </div>
   );
 }
