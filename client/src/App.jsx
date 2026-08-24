@@ -3,12 +3,12 @@ import "./App.css";
 
 import Lobby from "./pages/Lobby";
 import Battle from "./pages/Battle";
+import Shop from "./pages/Shop";
 
 function App() {
   const [screen, setScreen] = useState("home");
   const [match, setMatch] = useState(null);
 
-  // LOBBY SCREEN
   if (screen === "lobby") {
     return (
       <Lobby
@@ -20,8 +20,14 @@ function App() {
       />
     );
   }
+  if (screen === "shop") {
+    return (
+      <Shop
+        onBack={() => setScreen("home")}
+      />
+    );
+  }
 
-  // BATTLE SCREEN
   if (screen === "battle") {
     return (
       <Battle
@@ -31,7 +37,6 @@ function App() {
     );
   }
 
-  // HOME SCREEN
   return (
     <div className="app">
       <header className="topbar">
