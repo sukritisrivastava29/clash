@@ -9,8 +9,6 @@
   overflow-x: hidden;
 }
 
-/* HEADER */
-
 .shop-header {
   display: flex;
   align-items: center;
@@ -75,7 +73,6 @@
   margin-right: 8px;
 }
 
-/* CONTENT */
 
 .shop-content {
   max-width: 1150px;
@@ -107,8 +104,6 @@
   opacity: 0.75;
 }
 
-/* TABS */
-
 .shop-tabs {
   display: flex;
   justify-content: center;
@@ -138,8 +133,6 @@
   color: white;
   box-shadow: 0 4px 0 #d76e3e;
 }
-
-/* ITEMS */
 
 .shop-grid {
   display: grid;
@@ -232,7 +225,6 @@
   cursor: default;
 }
 
-/* RESPONSIVE */
 
 @media (max-width: 900px) {
   .shop-grid {
