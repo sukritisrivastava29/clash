@@ -68,9 +68,12 @@ function App() {
             🎮 <span>PLAY</span>
           </button>
 
-          <button className="menu-button">
-            🛒 <span>SHOP</span>
-          </button>
+         <button
+  className="menu-button"
+  onClick={() => setScreen("shop")}
+>
+  🛒 <span>SHOP</span>
+</button>
 
           <button className="menu-button">
             🐻 <span>HEROES</span>
