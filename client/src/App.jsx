@@ -87,17 +87,25 @@ if (screen === "friends") {
   🛒 <span>SHOP</span>
 </button>
 
-          <button className="menu-button">
-            🐻 <span>HEROES</span>
-          </button>
+       <button
+  className="menu-button"
+  onClick={() => setScreen("heroes")}
+>
+  🐻 <span>HEROES</span>
+</button>
 
-          <button className="menu-button">
-            🏆 <span>RANK</span>
-          </button>
-
-          <button className="menu-button">
-            👥 <span>FRIENDS</span>
-          </button>
+        <button
+  className="menu-button"
+  onClick={() => setScreen("rank")}
+>
+  🏆 <span>RANK</span>
+</button>
+         <button
+  className="menu-button"
+  onClick={() => setScreen("friends")}
+>
+  👥 <span>FRIENDS</span>
+</button>
         </aside>
 
         <section className="hero">
