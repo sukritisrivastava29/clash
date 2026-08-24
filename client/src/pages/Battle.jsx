@@ -1,7 +1,37 @@
 import { useEffect, useRef, useState } from "react";
 import "./Battle.css";
+const heroData = {
+  puffy: {
+    name: "Puffy",
+    avatar: "🐻",
+    role: "BALANCED",
+  },
 
-const Battle = ({ onBack, match }) => {
+  bunny: {
+    name: "Bunny",
+    avatar: "🐰",
+    role: "SPEED",
+  },
+
+  fox: {
+    name: "Fox",
+    avatar: "🦊",
+    role: "ATTACK",
+  },
+
+  panda: {
+    name: "Panda",
+    avatar: "🐼",
+    role: "TANK",
+  },
+
+  kitty: {
+    name: "Kitty",
+    avatar: "🐱",
+    role: "MAGIC",
+  },
+};
+const Battle = ({ onBack, match, player: playerData, setPlayer }) => {
   const [time, setTime] = useState(60);
   const [started, setStarted] = useState(false);
   const [result, setResult] = useState(null);
@@ -65,9 +95,15 @@ const Battle = ({ onBack, match }) => {
     resultRef.current = result;
   }, [result]);
 
-  const opponentName = match?.name || "Bunny";
-  const opponentAvatar = match?.avatar || "🐰";
-  const opponentLevel = match?.level || 21;
+ const selectedHero =
+  heroData[playerData?.selectedHero] || heroData.puffy;
+
+const playerName = selectedHero.name;
+const playerAvatar = selectedHero.avatar;
+
+const opponentName = match?.name || "Bunny";
+const opponentAvatar = match?.avatar || "🐰";
+const opponentLevel = match?.level || 21;
 
   const showMessage = (text) => {
     setMessage(text);
@@ -92,9 +128,7 @@ const Battle = ({ onBack, match }) => {
     );
   };
 
-  /*
-   * COUNTDOWN
-   */
+ 
   useEffect(() => {
     let count = 3;
 
@@ -535,9 +569,6 @@ const Battle = ({ onBack, match }) => {
     setStars((prev) => [...prev, newItem]);
   };
 
-  /*
-   * BUNNY AI
-   */
   useEffect(() => {
     if (!started || result) return;
 
@@ -581,9 +612,6 @@ const Battle = ({ onBack, match }) => {
     return () => clearInterval(ai);
   }, [started, result]);
 
-  /*
-   * BUNNY COLLECTS ITEMS
-   */
   useEffect(() => {
     if (!started || result) return;
 
@@ -599,9 +627,7 @@ const Battle = ({ onBack, match }) => {
     });
   }, [opponent, stars, started, result]);
 
-  /*
-   * BUNNY ATTACKS
-   */
+ 
   useEffect(() => {
     if (!started || result) return;
 
@@ -657,12 +683,12 @@ const Battle = ({ onBack, match }) => {
       <div className="battle-scoreboard">
         <div className="battle-player you">
           <div className="battle-avatar">
-            🐻
-          </div>
+  {playerAvatar}
+</div>
 
-          <div>
-            <span>YOU</span>
-            <strong>PuffyBear</strong>
+<div>
+  <span>YOU</span>
+  <strong>{playerName}</strong>
 
             <div className="health-bar">
               <div
@@ -742,18 +768,17 @@ const Battle = ({ onBack, match }) => {
           </div>
         ))}
 
-        <div
-          className={`battle-character player ${
-            playerShield ? "shielded" : ""
-          } ${action === "dash" ? "dashing" : ""}`}
-          style={{
-            left: `${player.x}%`,
-            top: `${player.y}%`,
-          }}
-        >
-          🐻
-
-          <span>PuffyBear</span>
+       <div
+  className={`battle-character player ${
+    playerShield ? "shielded" : ""
+  } ${action === "dash" ? "dashing" : ""}`}
+  style={{
+    left: `${player.x}%`,
+    top: `${player.y}%`,
+  }}
+>
+  {playerAvatar}
+  <span>{playerName}</span>
 
           {playerShield && (
             <div className="shield-effect">
