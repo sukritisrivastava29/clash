@@ -110,9 +110,7 @@ const Battle = ({ onBack, match }) => {
     return () => clearInterval(timer);
   }, []);
 
-  /*
-   * GAME TIMER
-   */
+ 
   useEffect(() => {
     if (!started || result) return;
 
@@ -142,9 +140,6 @@ const Battle = ({ onBack, match }) => {
     return () => clearInterval(timer);
   }, [started, result, playerScore, opponentScore]);
 
-  /*
-   * COOLDOWNS
-   */
   useEffect(() => {
     const timer = setInterval(() => {
       setCooldowns((prev) => ({
@@ -158,9 +153,7 @@ const Battle = ({ onBack, match }) => {
     return () => clearInterval(timer);
   }, []);
 
-  /*
-   * SHIELD
-   */
+  
   useEffect(() => {
     if (!playerShield) return;
 
@@ -181,9 +174,7 @@ const Battle = ({ onBack, match }) => {
     return () => clearTimeout(timer);
   }, [opponentShield]);
 
-  /*
-   * BASIC ATTACK
-   */
+  
   const attack = () => {
     if (
       !started ||
@@ -206,7 +197,7 @@ const Battle = ({ onBack, match }) => {
       } else {
         setOpponentHealth((prev) => Math.max(0, prev - 12));
 
-        setPlayerScore((prev) => prev + 2);
+        
 
         showMessage("⚡ HIT! +2");
 
@@ -238,9 +229,7 @@ const Battle = ({ onBack, match }) => {
     }));
   };
 
-  /*
-   * SPECIAL ATTACK - Q
-   */
+ 
   const specialAttack = () => {
     if (
       !started ||
@@ -264,17 +253,11 @@ const Battle = ({ onBack, match }) => {
         setOpponentHealth((prev) =>
           Math.max(0, prev - 25)
         );
-
-        setPlayerScore((prev) => prev + 5);
-
         showMessage("💥 SPECIAL HIT! +5");
-
         setOpponent((prev) => {
           const dx = prev.x - p.x;
           const dy = prev.y - p.y;
-
           const length = Math.sqrt(dx * dx + dy * dy) || 1;
-
           return {
             x: Math.max(
               5,
@@ -297,9 +280,6 @@ const Battle = ({ onBack, match }) => {
     }));
   };
 
-  /*
-   * DASH - E
-   */
   const dash = () => {
     if (
       !started ||
@@ -346,9 +326,6 @@ const Battle = ({ onBack, match }) => {
     }));
   };
 
-  /*
-   * SHIELD - R
-   */
   const shield = () => {
     if (
       !started ||
@@ -371,9 +348,7 @@ const Battle = ({ onBack, match }) => {
     }));
   };
 
-  /*
-   * KEYBOARD CONTROLS
-   */
+ 
   useEffect(() => {
     if (!started || result) return;
 
@@ -448,9 +423,7 @@ const Battle = ({ onBack, match }) => {
     };
   }, [started, result, cooldowns, opponentShield, playerShield]);
 
-  /*
-   * PLAYER MOVEMENT
-   */
+  
   useEffect(() => {
     if (!started || result) return;
 
@@ -657,24 +630,7 @@ const Battle = ({ onBack, match }) => {
     return () => clearInterval(aiAttack);
   }, [started, result, playerShield]);
 
-  /*
-   * PLAYER DEFEATED
-   */
-  useEffect(() => {
-    if (playerHealth <= 0 && !result) {
-      setResult("lose");
-    }
-  }, [playerHealth, result]);
-
-  /*
-   * OPPONENT DEFEATED
-   */
-  useEffect(() => {
-    if (opponentHealth <= 0 && !result) {
-      setResult("win");
-    }
-  }, [opponentHealth, result]);
-
+ 
   const restartGame = () => {
     window.location.reload();
   };
