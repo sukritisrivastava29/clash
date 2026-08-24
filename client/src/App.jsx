@@ -1,14 +1,37 @@
-import "./App.css";
-import Lobby from "./pages/Lobby";
 import { useState } from "react";
+import "./App.css";
+
+import Lobby from "./pages/Lobby";
+import Battle from "./pages/Battle";
 
 function App() {
   const [screen, setScreen] = useState("home");
+  const [match, setMatch] = useState(null);
 
+  // LOBBY SCREEN
   if (screen === "lobby") {
-    return <Lobby onBack={() => setScreen("home")} />;
+    return (
+      <Lobby
+        onBack={() => setScreen("home")}
+        onBattle={(matchData) => {
+          setMatch(matchData);
+          setScreen("battle");
+        }}
+      />
+    );
   }
 
+  // BATTLE SCREEN
+  if (screen === "battle") {
+    return (
+      <Battle
+        match={match}
+        onBack={() => setScreen("lobby")}
+      />
+    );
+  }
+
+  // HOME SCREEN
   return (
     <div className="app">
       <header className="topbar">

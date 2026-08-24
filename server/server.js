@@ -30,6 +30,7 @@ io.on("connection", (socket) => {
   socket.on("find_match", (player) => {
     console.log("Player looking for match:", player);
 
+  
     if (waitingPlayers.length > 0) {
       const opponent = waitingPlayers.shift();
 
@@ -37,7 +38,9 @@ io.on("connection", (socket) => {
 
       socket.join(roomId);
 
-      const opponentSocket = io.sockets.sockets.get(opponent.socketId);
+      const opponentSocket = io.sockets.sockets.get(
+        opponent.socketId
+      );
 
       if (opponentSocket) {
         opponentSocket.join(roomId);
@@ -45,9 +48,7 @@ io.on("connection", (socket) => {
 
       io.to(roomId).emit("match_found", {
         roomId,
-
         player1: opponent,
-
         player2: {
           socketId: socket.id,
           name: player.name,
@@ -56,17 +57,58 @@ io.on("connection", (socket) => {
         },
       });
 
-      console.log("Match created:", roomId);
-    } else {
-      waitingPlayers.push({
-        socketId: socket.id,
-        name: player.name,
-        level: player.level,
-        avatar: player.avatar,
-      });
+      console.log("Real match created:", roomId);
 
-      console.log("Player added to waiting queue");
+      return;
     }
+
+    waitingPlayers.push({
+      socketId: socket.id,
+      name: player.name,
+      level: player.level,
+      avatar: player.avatar,
+    });
+
+    console.log("Player added to waiting queue");
+
+    setTimeout(() => {
+      const index = waitingPlayers.findIndex(
+        (p) => p.socketId === socket.id
+      );
+
+      if (index === -1) {
+        return;
+      }
+
+      waitingPlayers.splice(index, 1);
+
+      const roomId = `bot-${socket.id}`;
+
+      socket.join(roomId);
+
+      const bot = {
+        socketId: "BOT_BUNNY",
+        name: "Bunny",
+        level: 21,
+        avatar: "🐰",
+      };
+
+      const match = {
+        roomId,
+        player1: {
+          socketId: socket.id,
+          name: player.name,
+          level: player.level,
+          avatar: player.avatar,
+        },
+        player2: bot,
+        isBot: true,
+      };
+
+      socket.emit("match_found", match);
+
+      console.log("Bot match created:", roomId);
+    }, 1500);
   });
 
   socket.on("cancel_match", () => {
@@ -78,7 +120,10 @@ io.on("connection", (socket) => {
       waitingPlayers.splice(index, 1);
     }
 
-    console.log("Player cancelled matchmaking:", socket.id);
+    console.log(
+      "Player cancelled matchmaking:",
+      socket.id
+    );
   });
 
   socket.on("disconnect", () => {
@@ -90,7 +135,10 @@ io.on("connection", (socket) => {
       waitingPlayers.splice(index, 1);
     }
 
-    console.log("Player disconnected:", socket.id);
+    console.log(
+      "Player disconnected:",
+      socket.id
+    );
   });
 });
 
@@ -99,5 +147,7 @@ app.get("/", (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Clash server running on http://localhost:${PORT}`);
+  console.log(
+    `Clash server running on http://localhost:${PORT}`
+  );
 });
