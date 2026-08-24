@@ -1,6 +1,8 @@
 import { useState } from "react";
 import "./App.css";
-
+import Heroes from "./pages/Heroes";
+import Rank from "./pages/Rank";
+import Friends from "./pages/Friends";
 import Lobby from "./pages/Lobby";
 import Battle from "./pages/Battle";
 import Shop from "./pages/Shop";
@@ -8,7 +10,17 @@ import Shop from "./pages/Shop";
 function App() {
   const [screen, setScreen] = useState("home");
   const [match, setMatch] = useState(null);
+if (screen === "heroes") {
+  return <Heroes onBack={() => setScreen("home")} />;
+}
 
+if (screen === "rank") {
+  return <Rank onBack={() => setScreen("home")} />;
+}
+
+if (screen === "friends") {
+  return <Friends onBack={() => setScreen("home")} />;
+}
   if (screen === "lobby") {
     return (
       <Lobby
