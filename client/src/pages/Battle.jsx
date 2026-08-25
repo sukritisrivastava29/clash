@@ -1,37 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./Battle.css";
-const heroData = {
-  puffy: {
-    name: "Puffy",
-    avatar: "🐻",
-    role: "BALANCED",
-  },
 
-  bunny: {
-    name: "Bunny",
-    avatar: "🐰",
-    role: "SPEED",
-  },
-
-  fox: {
-    name: "Fox",
-    avatar: "🦊",
-    role: "ATTACK",
-  },
-
-  panda: {
-    name: "Panda",
-    avatar: "🐼",
-    role: "TANK",
-  },
-
-  kitty: {
-    name: "Kitty",
-    avatar: "🐱",
-    role: "MAGIC",
-  },
-};
-const Battle = ({ onBack, match, player: playerData, setPlayer }) => {
+const Battle = ({ onBack, match }) => {
   const [time, setTime] = useState(60);
   const [started, setStarted] = useState(false);
   const [result, setResult] = useState(null);
@@ -95,15 +65,8 @@ const Battle = ({ onBack, match, player: playerData, setPlayer }) => {
     resultRef.current = result;
   }, [result]);
 
- const selectedHero =
-  heroData[playerData?.selectedHero] || heroData.puffy;
-
-const playerName = selectedHero.name;
-const playerAvatar = selectedHero.avatar;
-
-const opponentName = match?.name || "Bunny";
-const opponentAvatar = match?.avatar || "🐰";
-const opponentLevel = match?.level || 21;
+  const opponentName = match?.name || "Bunny";
+  const opponentAvatar = match?.avatar || "🐰";
 
   const showMessage = (text) => {
     setMessage(text);
@@ -123,12 +86,14 @@ const opponentLevel = match?.level || 21;
 
   const distanceBetween = (a, b) => {
     return Math.sqrt(
-      Math.pow(a.x - b.x, 2) +
-        Math.pow(a.y - b.y, 2)
+      Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)
     );
   };
 
- 
+  // =========================
+  // COUNTDOWN
+  // =========================
+
   useEffect(() => {
     let count = 3;
 
@@ -144,7 +109,10 @@ const opponentLevel = match?.level || 21;
     return () => clearInterval(timer);
   }, []);
 
- 
+  // =========================
+  // GAME TIMER
+  // =========================
+
   useEffect(() => {
     if (!started || result) return;
 
@@ -156,13 +124,13 @@ const opponentLevel = match?.level || 21;
           const finalPlayerScore = playerScore;
           const finalOpponentScore = opponentScore;
 
-          setResult(
-            finalPlayerScore > finalOpponentScore
-              ? "win"
-              : finalPlayerScore < finalOpponentScore
-              ? "lose"
-              : "draw"
-          );
+          if (finalPlayerScore > finalOpponentScore) {
+            setResult("win");
+          } else if (finalPlayerScore < finalOpponentScore) {
+            setResult("lose");
+          } else {
+            setResult("draw");
+          }
 
           return 0;
         }
@@ -173,6 +141,10 @@ const opponentLevel = match?.level || 21;
 
     return () => clearInterval(timer);
   }, [started, result, playerScore, opponentScore]);
+
+  // =========================
+  // COOLDOWNS
+  // =========================
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -187,7 +159,10 @@ const opponentLevel = match?.level || 21;
     return () => clearInterval(timer);
   }, []);
 
-  
+  // =========================
+  // SHIELD TIMERS
+  // =========================
+
   useEffect(() => {
     if (!playerShield) return;
 
@@ -208,7 +183,10 @@ const opponentLevel = match?.level || 21;
     return () => clearTimeout(timer);
   }, [opponentShield]);
 
-  
+  // =========================
+  // ATTACK
+  // =========================
+
   const attack = () => {
     if (
       !started ||
@@ -229,9 +207,11 @@ const opponentLevel = match?.level || 21;
       if (opponentShield) {
         showMessage("🛡️ BLOCKED!");
       } else {
-        setOpponentHealth((prev) => Math.max(0, prev - 12));
+        setOpponentHealth((prev) =>
+          Math.max(0, prev - 12)
+        );
 
-        
+        setPlayerScore((prev) => prev + 2);
 
         showMessage("⚡ HIT! +2");
 
@@ -263,7 +243,10 @@ const opponentLevel = match?.level || 21;
     }));
   };
 
- 
+  // =========================
+  // SPECIAL ATTACK
+  // =========================
+
   const specialAttack = () => {
     if (
       !started ||
@@ -287,11 +270,17 @@ const opponentLevel = match?.level || 21;
         setOpponentHealth((prev) =>
           Math.max(0, prev - 25)
         );
+
+        setPlayerScore((prev) => prev + 5);
+
         showMessage("💥 SPECIAL HIT! +5");
+
         setOpponent((prev) => {
           const dx = prev.x - p.x;
           const dy = prev.y - p.y;
+
           const length = Math.sqrt(dx * dx + dy * dy) || 1;
+
           return {
             x: Math.max(
               5,
@@ -313,6 +302,10 @@ const opponentLevel = match?.level || 21;
       special: 5,
     }));
   };
+
+  // =========================
+  // DASH
+  // =========================
 
   const dash = () => {
     if (
@@ -360,6 +353,10 @@ const opponentLevel = match?.level || 21;
     }));
   };
 
+  // =========================
+  // SHIELD
+  // =========================
+
   const shield = () => {
     if (
       !started ||
@@ -382,30 +379,33 @@ const opponentLevel = match?.level || 21;
     }));
   };
 
- 
+  // =========================
+  // KEYBOARD
+  // =========================
+
   useEffect(() => {
     if (!started || result) return;
 
     const handleKeyDown = (e) => {
       const key = e.key.toLowerCase();
 
-      if (
-        [
-          "w",
-          "a",
-          "s",
-          "d",
-          "q",
-          "e",
-          "r",
-          " ",
-          "shift",
-          "arrowup",
-          "arrowdown",
-          "arrowleft",
-          "arrowright",
-        ].includes(key)
-      ) {
+      const gameKeys = [
+        "w",
+        "a",
+        "s",
+        "d",
+        "q",
+        "e",
+        "r",
+        " ",
+        "shift",
+        "arrowup",
+        "arrowdown",
+        "arrowleft",
+        "arrowright",
+      ];
+
+      if (gameKeys.includes(key)) {
         e.preventDefault();
       }
 
@@ -434,30 +434,25 @@ const opponentLevel = match?.level || 21;
       keysRef.current.delete(e.key.toLowerCase());
     };
 
-    window.addEventListener(
-      "keydown",
-      handleKeyDown
-    );
-
-    window.addEventListener(
-      "keyup",
-      handleKeyUp
-    );
+    window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
 
     return () => {
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
-
-      window.removeEventListener(
-        "keyup",
-        handleKeyUp
-      );
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
     };
-  }, [started, result, cooldowns, opponentShield, playerShield]);
+  }, [
+    started,
+    result,
+    cooldowns,
+    opponentShield,
+    playerShield,
+  ]);
 
-  
+  // =========================
+  // PLAYER MOVEMENT
+  // =========================
+
   useEffect(() => {
     if (!started || result) return;
 
@@ -468,11 +463,7 @@ const opponentLevel = match?.level || 21;
         let x = prev.x;
         let y = prev.y;
 
-        let speed = 1.2;
-
-        if (keys.has("shift")) {
-          speed = 2;
-        }
+        let speed = keys.has("shift") ? 2 : 1.2;
 
         if (
           keys.has("w") ||
@@ -502,41 +493,37 @@ const opponentLevel = match?.level || 21;
           x += speed;
         }
 
-        x = Math.max(5, Math.min(95, x));
-        y = Math.max(12, Math.min(82, y));
-
-        return { x, y };
+        return {
+          x: Math.max(5, Math.min(95, x)),
+          y: Math.max(12, Math.min(82, y)),
+        };
       });
     }, 30);
 
     return () => clearInterval(movement);
   }, [started, result]);
 
-  /*
-   * COLLECT ITEMS
-   */
-  useEffect(() => {
-    if (!started || result) return;
+  // =========================
+  // COLLECT ITEMS
+  // =========================
 
-    stars.forEach((item) => {
-      const distance = distanceBetween(
-        playerRef.current,
-        item
-      );
+  const spawnItem = () => {
+    const newItem = {
+      id: Date.now() + Math.random(),
+      x: Math.floor(Math.random() * 80) + 10,
+      y: Math.floor(Math.random() * 65) + 15,
+      type: Math.random() > 0.8 ? "gem" : "star",
+    };
 
-      if (distance < 7) {
-        collectItem(item, true);
-      }
-    });
-  }, [player, stars, started, result]);
+    setStars((prev) => [...prev, newItem]);
+  };
 
   const collectItem = (item, isPlayer) => {
     setStars((prev) =>
       prev.filter((star) => star.id !== item.id)
     );
 
-    const points =
-      item.type === "star" ? 5 : 15;
+    const points = item.type === "star" ? 5 : 15;
 
     if (isPlayer) {
       setPlayerScore((prev) => prev + points);
@@ -555,19 +542,24 @@ const opponentLevel = match?.level || 21;
     }, 1500);
   };
 
-  const spawnItem = () => {
-    const newItem = {
-      id: Date.now() + Math.random(),
-      x: Math.floor(Math.random() * 80) + 10,
-      y: Math.floor(Math.random() * 65) + 15,
-      type:
-        Math.random() > 0.8
-          ? "gem"
-          : "star",
-    };
+  useEffect(() => {
+    if (!started || result) return;
 
-    setStars((prev) => [...prev, newItem]);
-  };
+    stars.forEach((item) => {
+      const distance = distanceBetween(
+        playerRef.current,
+        item
+      );
+
+      if (distance < 7) {
+        collectItem(item, true);
+      }
+    });
+  }, [player, stars, started, result]);
+
+  // =========================
+  // BUNNY AI
+  // =========================
 
   useEffect(() => {
     if (!started || result) return;
@@ -586,8 +578,7 @@ const opponentLevel = match?.level || 21;
             const closestDistance =
               distanceBetween(prev, closest);
 
-            return currentDistance <
-              closestDistance
+            return currentDistance < closestDistance
               ? item
               : closest;
           },
@@ -605,12 +596,19 @@ const opponentLevel = match?.level || 21;
           if (y > target.y) y -= 0.55;
         }
 
-        return { x, y };
+        return {
+          x: Math.max(5, Math.min(95, x)),
+          y: Math.max(12, Math.min(82, y)),
+        };
       });
     }, 80);
 
     return () => clearInterval(ai);
   }, [started, result]);
+
+  // =========================
+  // BUNNY COLLECTS
+  // =========================
 
   useEffect(() => {
     if (!started || result) return;
@@ -627,7 +625,10 @@ const opponentLevel = match?.level || 21;
     });
   }, [opponent, stars, started, result]);
 
- 
+  // =========================
+  // BUNNY ATTACK
+  // =========================
+
   useEffect(() => {
     if (!started || result) return;
 
@@ -656,13 +657,21 @@ const opponentLevel = match?.level || 21;
     return () => clearInterval(aiAttack);
   }, [started, result, playerShield]);
 
- 
+  // =========================
+  // RESTART
+  // =========================
+
   const restartGame = () => {
     window.location.reload();
   };
 
+  // =========================
+  // UI
+  // =========================
+
   return (
     <div className="battle">
+
       <header className="battle-header">
         <button
           className="battle-back"
@@ -681,14 +690,15 @@ const opponentLevel = match?.level || 21;
       </header>
 
       <div className="battle-scoreboard">
+
         <div className="battle-player you">
           <div className="battle-avatar">
-  {playerAvatar}
-</div>
+            🐻
+          </div>
 
-<div>
-  <span>YOU</span>
-  <strong>{playerName}</strong>
+          <div>
+            <span>YOU</span>
+            <strong>PuffyBear</strong>
 
             <div className="health-bar">
               <div
@@ -708,10 +718,12 @@ const opponentLevel = match?.level || 21;
         </div>
 
         <div className="battle-player enemy">
+
           <b>{opponentScore}</b>
 
           <div>
             <span>OPPONENT</span>
+
             <strong>
               {opponentName}
             </strong>
@@ -729,10 +741,12 @@ const opponentLevel = match?.level || 21;
           <div className="battle-avatar">
             {opponentAvatar}
           </div>
+
         </div>
       </div>
 
       <main className="battle-arena">
+
         <div className="battle-cloud cloud-1">
           ☁️
         </div>
@@ -768,17 +782,20 @@ const opponentLevel = match?.level || 21;
           </div>
         ))}
 
-       <div
-  className={`battle-character player ${
-    playerShield ? "shielded" : ""
-  } ${action === "dash" ? "dashing" : ""}`}
-  style={{
-    left: `${player.x}%`,
-    top: `${player.y}%`,
-  }}
->
-  {playerAvatar}
-  <span>{playerName}</span>
+        <div
+          className={`battle-character player ${
+            playerShield ? "shielded" : ""
+          } ${
+            action === "dash" ? "dashing" : ""
+          }`}
+          style={{
+            left: `${player.x}%`,
+            top: `${player.y}%`,
+          }}
+        >
+          🐻
+
+          <span>PuffyBear</span>
 
           {playerShield && (
             <div className="shield-effect">
@@ -843,6 +860,7 @@ const opponentLevel = match?.level || 21;
 
         {result && (
           <div className="battle-overlay result">
+
             <div className="result-icon">
               {result === "win"
                 ? "🏆"
@@ -864,6 +882,7 @@ const opponentLevel = match?.level || 21;
             </div>
 
             <div className="result-buttons">
+
               <button onClick={restartGame}>
                 PLAY AGAIN
               </button>
@@ -874,14 +893,18 @@ const opponentLevel = match?.level || 21;
               >
                 BACK TO LOBBY
               </button>
+
             </div>
           </div>
         )}
+
       </main>
 
       {!result && (
         <div className="battle-controls">
+
           <div className="controls-info">
+
             <div>
               <b>WASD</b>
               <span>MOVE</span>
@@ -911,6 +934,7 @@ const opponentLevel = match?.level || 21;
               <b>R</b>
               <span>SHIELD</span>
             </div>
+
           </div>
 
           <p>
@@ -918,6 +942,7 @@ const opponentLevel = match?.level || 21;
           </p>
 
           <div className="ability-buttons">
+
             <button
               onClick={attack}
               disabled={
@@ -977,9 +1002,11 @@ const opponentLevel = match?.level || 21;
                   : "SHIELD"}
               </span>
             </button>
+
           </div>
         </div>
       )}
+
     </div>
   );
 };
