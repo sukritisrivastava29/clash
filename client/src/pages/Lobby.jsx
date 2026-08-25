@@ -2,30 +2,26 @@ import { useEffect, useState } from "react";
 import { io } from "socket.io-client";
 import "./Lobby.css";
 
-const socket = io("http://localhost:5000");
+const socket = io("http://localhost:5000", {
+  transports: ["websocket", "polling"],
+});
 
-const Lobby = ({ onBack, onBattle }) => {
+const Lobby = ({ player, onBack, onBattle }) => {
   const [searching, setSearching] = useState(false);
   const [opponent, setOpponent] = useState(null);
-
-  const findMatch = () => {
-    setSearching(true);
-    setOpponent(null);
-
-    socket.emit("find_match", {
-      name: "PuffyBear",
-      level: 23,
-      avatar: "🐻",
-    });
-  };
-
-  const cancelMatch = () => {
-    socket.emit("cancel_match");
-    setSearching(false);
-    setOpponent(null);
-  };
+  const [connected, setConnected] = useState(socket.connected);
 
   useEffect(() => {
+    const handleConnect = () => {
+      console.log("Socket connected:", socket.id);
+      setConnected(true);
+    };
+
+    const handleDisconnect = () => {
+      console.log("Socket disconnected");
+      setConnected(false);
+    };
+
     const handleMatchFound = (match) => {
       console.log("MATCH FOUND!", match);
 
@@ -39,12 +35,41 @@ const Lobby = ({ onBack, onBattle }) => {
       setOpponent(foundOpponent);
     };
 
+    socket.on("connect", handleConnect);
+    socket.on("disconnect", handleDisconnect);
     socket.on("match_found", handleMatchFound);
 
     return () => {
+      socket.off("connect", handleConnect);
+      socket.off("disconnect", handleDisconnect);
       socket.off("match_found", handleMatchFound);
     };
   }, []);
+
+  const findMatch = () => {
+    if (!socket.connected) {
+      console.log("Socket is not connected");
+      socket.connect();
+      return;
+    }
+
+    console.log("Finding match...");
+
+    setSearching(true);
+    setOpponent(null);
+
+    socket.emit("find_match", {
+      name: player?.name || "PuffyBear",
+      level: player?.level || 23,
+      avatar: "🐻",
+    });
+  };
+
+  const cancelMatch = () => {
+    socket.emit("cancel_match");
+    setSearching(false);
+    setOpponent(null);
+  };
 
   return (
     <div className="lobby">
@@ -57,8 +82,8 @@ const Lobby = ({ onBack, onBattle }) => {
           <div className="lobby-avatar">🐻</div>
 
           <div>
-            <strong>PuffyBear</strong>
-            <span>Level 23</span>
+            <strong>{player?.name || "PuffyBear"}</strong>
+            <span>Level {player?.level || 23}</span>
           </div>
         </div>
       </header>
@@ -78,8 +103,8 @@ const Lobby = ({ onBack, onBattle }) => {
 
             <div className="player-info">
               <span className="label">YOU</span>
-              <h2>PuffyBear</h2>
-              <p>Level 23</p>
+              <h2>{player?.name || "PuffyBear"}</h2>
+              <p>Level {player?.level || 23}</p>
             </div>
 
             <div className="status ready">READY</div>
@@ -139,13 +164,9 @@ const Lobby = ({ onBack, onBattle }) => {
           </div>
         </div>
 
-        {!opponent && (
-          <button
-            className="find-button"
-            onClick={findMatch}
-            disabled={searching}
-          >
-            {searching ? "SEARCHING..." : "🔎 FIND MATCH"}
+        {!opponent && !searching && (
+          <button className="find-button" onClick={findMatch}>
+            🔎 FIND MATCH
           </button>
         )}
 
@@ -162,6 +183,12 @@ const Lobby = ({ onBack, onBattle }) => {
           >
             ⚔️ START BATTLE
           </button>
+        )}
+
+        {!connected && (
+          <p style={{ marginTop: "15px", color: "#d66" }}>
+            Connecting to game server...
+          </p>
         )}
 
         <div className="lobby-decoration decoration-one">✦</div>
