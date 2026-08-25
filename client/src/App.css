@@ -12,6 +12,14 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
 body {
   margin: 0;
   min-width: 320px;
@@ -24,16 +32,27 @@ button {
   cursor: pointer;
 }
 
+button:focus-visible {
+  outline: 3px solid #a987c4;
+  outline-offset: 3px;
+}
+
 .app {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 10% 15%, #e4d6f5 0, transparent 24%),
-    radial-gradient(circle at 90% 80%, #ffd9c9 0, transparent 25%),
+    radial-gradient(
+      circle at 10% 15%,
+      #e4d6f5 0,
+      transparent 24%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      #ffd9c9 0,
+      transparent 25%
+    ),
     #fff5ed;
   overflow: hidden;
 }
-
-
 
 .topbar {
   height: 88px;
@@ -111,14 +130,10 @@ button {
   transform: translateY(-3px);
 }
 
-
-
 .home {
   min-height: calc(100vh - 88px);
   display: flex;
 }
-
-
 
 .sidebar {
   width: 145px;
@@ -127,6 +142,7 @@ button {
   flex-direction: column;
   align-items: center;
   gap: 13px;
+  flex-shrink: 0;
 }
 
 .menu-button {
@@ -147,10 +163,6 @@ button {
   transition: 0.2s ease;
 }
 
-.menu-button:first-letter {
-  font-size: 22px;
-}
-
 .menu-button:hover {
   transform: translateY(-3px);
   background: white;
@@ -163,93 +175,137 @@ button {
   box-shadow: 0 5px 0 #c2a4d8;
 }
 
+.menu-button span {
+  font-size: 13px;
+}
 
-
-.hero {
+.home-content {
   position: relative;
   flex: 1;
+  min-width: 0;
   min-height: calc(100vh - 88px);
-  padding: 45px 50px 35px;
+  padding: 35px 50px;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
 }
 
-.title-section {
+.welcome-card {
   position: relative;
-  z-index: 2;
+  width: min(900px, 95%);
+  min-height: 560px;
+  padding: 45px 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
-}
-
-.eyebrow {
-  margin: 0;
-  color: #977ca5;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 4px;
-}
-
-.title-section h1 {
-  margin: 5px 0 8px;
-  color: #79569d;
-  font-size: clamp(70px, 10vw, 120px);
-  line-height: 0.85;
-  letter-spacing: -6px;
-  text-shadow:
-    5px 5px white,
-    10px 10px #c2a4d8;
-}
-
-.tagline {
-  color: #806b88;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: 2px;
-}
-
-
-
-.arena-preview {
-  position: relative;
-  width: min(760px, 90%);
-  height: 280px;
-  margin-top: 30px;
   border-radius: 45px;
   background:
-    radial-gradient(circle at 50% 20%, #fff6cf 0, transparent 30%),
+    radial-gradient(
+      circle at 50% 12%,
+      #fff6cf 0,
+      transparent 30%
+    ),
     #d9c8ef;
   border: 5px solid white;
   box-shadow:
     0 10px 0 #c2a4d8,
-    inset 0 -40px 0 rgba(255, 255, 255, 0.22);
+    inset 0 -45px 0 rgba(255, 255, 255, 0.22);
   overflow: hidden;
 }
 
-
-
-.cloud {
+.welcome-card::before {
+  content: "";
   position: absolute;
-  opacity: 0.8;
-  font-size: 45px;
+  width: 260px;
+  height: 120px;
+  left: -80px;
+  top: 90px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: rotate(-15deg);
 }
 
-.cloud-one {
-  top: 25px;
-  left: 90px;
+.welcome-card::after {
+  content: "";
+  position: absolute;
+  width: 220px;
+  height: 100px;
+  right: -70px;
+  bottom: 100px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  transform: rotate(15deg);
 }
 
-.cloud-two {
-  top: 55px;
-  right: 100px;
+.welcome-decoration {
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.welcome-decoration.star {
+  top: 45px;
+  left: 70px;
+  color: #ffffff;
   font-size: 35px;
+  animation: float 3s ease-in-out infinite;
 }
 
-
-
-.character {
-  position: absolute;
+.welcome-decoration.flower {
+  right: 65px;
   bottom: 45px;
+  font-size: 34px;
+  animation: float 2.8s ease-in-out infinite;
+}
+
+.welcome-eyebrow {
+  position: relative;
+  z-index: 3;
+  margin: 0 0 5px;
+  color: #977ca5;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 4px;
+}
+
+.welcome-card h1 {
+  position: relative;
+  z-index: 3;
+  margin: 5px 0 10px;
+  color: #79569d;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 0.9;
+  letter-spacing: -4px;
+  text-shadow:
+    4px 4px white,
+    8px 8px #c2a4d8;
+}
+
+.welcome-card > span {
+  position: relative;
+  z-index: 3;
+  max-width: 500px;
+  margin: 10px 0 15px;
+  color: #806b88;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.home-characters {
+  position: relative;
+  z-index: 3;
+  width: min(520px, 90%);
+  height: 145px;
+  margin: 10px 0 15px;
+}
+
+.home-character {
+  position: absolute;
+  bottom: 10px;
   width: 105px;
   height: 105px;
   display: grid;
@@ -257,80 +313,45 @@ button {
   border-radius: 35px;
   background: rgba(255, 255, 255, 0.65);
   border: 4px solid white;
-  font-size: 65px;
-  z-index: 2;
+  font-size: 62px;
+  box-shadow: 0 7px 0 rgba(121, 86, 157, 0.12);
   animation: float 2.5s ease-in-out infinite;
 }
 
-.bear {
-  left: 18%;
+.left-character {
+  left: 8%;
 }
 
-.bunny {
-  right: 18%;
+.right-character {
+  right: 8%;
   animation-delay: 0.5s;
 }
 
-.flag {
-  position: absolute;
-  top: -18px;
-  right: -12px;
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
-  background: white;
-  font-size: 20px;
-}
-
-.core {
+.home-core {
   position: absolute;
   left: 50%;
-  bottom: 65px;
+  bottom: 12px;
   transform: translateX(-50%);
-  width: 95px;
-  height: 95px;
+  width: 82px;
+  height: 82px;
   display: grid;
   place-items: center;
   border-radius: 50%;
   background: #ffd45e;
   border: 5px solid white;
   box-shadow: 0 8px 0 #e4b23e;
-  font-size: 35px;
-  z-index: 2;
+  font-size: 30px;
   animation: pulse 1.8s infinite;
 }
 
-
-
-.ground-flower {
-  position: absolute;
-  bottom: 12px;
-  font-size: 28px;
-}
-
-.flower-one {
-  left: 8%;
-}
-
-.flower-two {
-  left: 48%;
-}
-
-.flower-three {
-  right: 8%;
-}
-
-
-
-.play-button {
+.play-now-button {
   position: relative;
-  z-index: 3;
-  margin-top: 35px;
-  padding: 18px 48px;
+  z-index: 5;
+  margin-top: 5px;
+  padding: 18px 45px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 10px;
   border-radius: 20px;
   background: #ffd15b;
@@ -341,57 +362,15 @@ button {
   transition: 0.2s ease;
 }
 
-.play-button:hover {
+.play-now-button:hover {
   transform: translateY(-4px);
   box-shadow: 0 11px 0 #e3ad3b;
 }
 
-.play-button:active {
+.play-now-button:active {
   transform: translateY(2px);
   box-shadow: 0 3px 0 #e3ad3b;
 }
-
-.play-button span {
-  font-size: 16px;
-}
-
-.subtitle {
-  margin: 18px 0 0;
-  color: #987fa4;
-  font-size: 14px;
-}
-
-
-
-.floating {
-  position: absolute;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.star-one {
-  top: 90px;
-  left: 8%;
-  font-size: 30px;
-  animation: float 3s ease-in-out infinite;
-}
-
-.star-two {
-  top: 180px;
-  right: 8%;
-  color: #d5a6d4;
-  font-size: 35px;
-  animation: float 2.5s ease-in-out infinite;
-}
-
-.flower {
-  bottom: 18%;
-  right: 5%;
-  font-size: 30px;
-  animation: float 3s ease-in-out infinite;
-}
-
-
 
 @keyframes float {
   0%,
@@ -415,8 +394,6 @@ button {
   }
 }
 
-
-
 @media (max-width: 850px) {
   .topbar {
     padding: 15px 20px;
@@ -430,28 +407,29 @@ button {
     width: 80px;
   }
 
-  .hero {
-    padding: 35px 20px;
+  .home-content {
+    padding: 30px 20px;
   }
 
-  .arena-preview {
+  .welcome-card {
     width: 95%;
+    min-height: 500px;
+    padding: 35px 25px;
   }
 
-  .bear {
-    left: 10%;
+  .left-character {
+    left: 3%;
   }
 
-  .bunny {
-    right: 10%;
+  .right-character {
+    right: 3%;
   }
 }
-
-
 
 @media (max-width: 600px) {
   .topbar {
     height: auto;
+    min-height: 88px;
     padding: 15px;
   }
 
@@ -488,32 +466,60 @@ button {
     font-size: 10px;
   }
 
-  .hero {
+  .menu-button span {
+    font-size: 10px;
+  }
+
+  .home-content {
     min-height: calc(100vh - 160px);
-    padding: 25px 12px;
+    padding: 20px 12px 30px;
   }
 
-  .title-section h1 {
-    font-size: 70px;
+  .welcome-card {
+    min-height: 460px;
+    padding: 30px 15px;
+    border-radius: 32px;
   }
 
-  .arena-preview {
-    height: 230px;
+  .welcome-card h1 {
+    font-size: 50px;
+    letter-spacing: -3px;
   }
 
-  .character {
+  .welcome-card > span {
+    font-size: 14px;
+  }
+
+  .home-characters {
+    width: 100%;
+    height: 120px;
+  }
+
+  .home-character {
     width: 75px;
     height: 75px;
+    border-radius: 25px;
     font-size: 45px;
   }
 
-  .core {
-    width: 70px;
-    height: 70px;
-    font-size: 25px;
+  .home-core {
+    width: 65px;
+    height: 65px;
+    font-size: 24px;
   }
 
-  .play-button {
-    padding: 15px 35px;
+  .welcome-decoration.star {
+    left: 25px;
+    top: 25px;
+  }
+
+  .welcome-decoration.flower {
+    right: 25px;
+    bottom: 25px;
+  }
+
+  .play-now-button {
+    padding: 15px 32px;
+    font-size: 17px;
   }
 }
