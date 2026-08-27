@@ -47,48 +47,58 @@ const Lobby = ({ player, onBack, onBattle }) => {
   }, []);
 
   const findMatch = () => {
+    if (!player?.name) {
+      console.log("Player name is missing");
+      return;
+    }
+
     if (!socket.connected) {
       console.log("Socket is not connected");
       socket.connect();
       return;
     }
 
-    console.log("Finding match...");
+    console.log("Finding match for:", player.name);
 
     setSearching(true);
     setOpponent(null);
 
     socket.emit("find_match", {
-      name: player?.name || "PuffyBear",
-      level: player?.level || 23,
-      avatar: "🐻",
+      name: player.name,
+      level: player.level,
+      avatar: player.avatar,
     });
   };
 
   const cancelMatch = () => {
     socket.emit("cancel_match");
+
     setSearching(false);
     setOpponent(null);
   };
 
   return (
     <div className="lobby">
+
       <header className="lobby-header">
         <button className="back-button" onClick={onBack}>
           ← Back
         </button>
 
         <div className="lobby-player">
-          <div className="lobby-avatar">🐻</div>
+          <div className="lobby-avatar">
+            {player?.avatar}
+          </div>
 
           <div>
-            <strong>{player?.name || "PuffyBear"}</strong>
-            <span>Level {player?.level || 23}</span>
+            <strong>{player?.name}</strong>
+            <span>Level {player?.level}</span>
           </div>
         </div>
       </header>
 
       <main className="lobby-content">
+
         <p className="lobby-eyebrow">READY TO</p>
 
         <h1>CLASH?</h1>
@@ -98,36 +108,57 @@ const Lobby = ({ player, onBack, onBattle }) => {
         </p>
 
         <div className="players">
+
+          {/* YOU */}
           <div className="player-card you">
-            <div className="player-character">🐻</div>
+
+            <div className="player-character">
+              {player?.avatar}
+            </div>
 
             <div className="player-info">
               <span className="label">YOU</span>
-              <h2>{player?.name || "PuffyBear"}</h2>
-              <p>Level {player?.level || 23}</p>
+
+              <h2>{player?.name}</h2>
+
+              <p>Level {player?.level}</p>
             </div>
 
-            <div className="status ready">READY</div>
+            <div className="status ready">
+              READY
+            </div>
+
           </div>
 
+          {/* VS */}
           <div className="versus">
             <div>VS</div>
             <span>✦</span>
           </div>
 
+          {/* OPPONENT */}
           <div
             className={`player-card opponent ${
               searching ? "searching" : ""
             } ${opponent ? "found" : ""}`}
           >
+
             {searching ? (
               <>
-                <div className="search-icon">🔎</div>
+                <div className="search-icon">
+                  🔎
+                </div>
 
                 <div className="player-info">
-                  <span className="label">OPPONENT</span>
+                  <span className="label">
+                    OPPONENT
+                  </span>
+
                   <h2>Finding Player...</h2>
-                  <p>Searching the arena</p>
+
+                  <p>
+                    Searching the arena
+                  </p>
                 </div>
 
                 <div className="loading-dots">
@@ -143,39 +174,66 @@ const Lobby = ({ player, onBack, onBattle }) => {
                 </div>
 
                 <div className="player-info">
-                  <span className="label">OPPONENT</span>
+                  <span className="label">
+                    OPPONENT
+                  </span>
+
                   <h2>{opponent.name}</h2>
-                  <p>Level {opponent.level}</p>
+
+                  <p>
+                    Level {opponent.level}
+                  </p>
                 </div>
 
-                <div className="status ready">FOUND</div>
+                <div className="status ready">
+                  FOUND
+                </div>
               </>
             ) : (
               <>
-                <div className="question-character">?</div>
+                <div className="question-character">
+                  ?
+                </div>
 
                 <div className="player-info">
-                  <span className="label">OPPONENT</span>
+                  <span className="label">
+                    OPPONENT
+                  </span>
+
                   <h2>Waiting...</h2>
-                  <p>Your opponent will appear here</p>
+
+                  <p>
+                    Your opponent will appear here
+                  </p>
                 </div>
               </>
             )}
+
           </div>
+
         </div>
 
+        {/* FIND MATCH */}
         {!opponent && !searching && (
-          <button className="find-button" onClick={findMatch}>
+          <button
+            className="find-button"
+            onClick={findMatch}
+          >
             🔎 FIND MATCH
           </button>
         )}
 
+        {/* CANCEL */}
         {searching && (
-          <button className="cancel-button" onClick={cancelMatch}>
+          <button
+            className="cancel-button"
+            onClick={cancelMatch}
+          >
             Cancel
           </button>
         )}
 
+        {/* START BATTLE */}
         {opponent && (
           <button
             className="find-button"
@@ -186,14 +244,28 @@ const Lobby = ({ player, onBack, onBattle }) => {
         )}
 
         {!connected && (
-          <p style={{ marginTop: "15px", color: "#d66" }}>
+          <p
+            style={{
+              marginTop: "15px",
+              color: "#d66",
+            }}
+          >
             Connecting to game server...
           </p>
         )}
 
-        <div className="lobby-decoration decoration-one">✦</div>
-        <div className="lobby-decoration decoration-two">🌸</div>
-        <div className="lobby-decoration decoration-three">⭐</div>
+        <div className="lobby-decoration decoration-one">
+          ✦
+        </div>
+
+        <div className="lobby-decoration decoration-two">
+          🌸
+        </div>
+
+        <div className="lobby-decoration decoration-three">
+          ⭐
+        </div>
+
       </main>
     </div>
   );

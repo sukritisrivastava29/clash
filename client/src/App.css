@@ -523,3 +523,79 @@ button:focus-visible {
     font-size: 17px;
   }
 }
+.name-screen {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+
+  background:
+    radial-gradient(
+      circle at 10% 20%,
+      #e4d6f5 0,
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 90% 80%,
+      #ffd9c9 0,
+      transparent 25%
+    ),
+    #fff5ed;
+}
+
+.name-card {
+  width: min(430px, 100%);
+  padding: 45px 35px;
+  text-align: center;
+
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 30px;
+
+  box-shadow:
+    0 20px 60px rgba(91, 71, 117, 0.15);
+}
+
+.name-avatar {
+  font-size: 70px;
+  margin-bottom: 10px;
+}
+
+.name-card h1 {
+  margin: 5px 0 10px;
+  font-size: 56px;
+}
+
+.name-card p {
+  color: #7b698d;
+  margin-bottom: 25px;
+}
+
+.name-card input {
+  width: 100%;
+  box-sizing: border-box;
+
+  padding: 15px 18px;
+
+  border: 2px solid #e3d8eb;
+  border-radius: 14px;
+
+  font-family: inherit;
+  font-size: 16px;
+
+  outline: none;
+  margin-bottom: 15px;
+}
+
+.name-card input:focus {
+  border-color: #9b7ac4;
+}
+
+.name-card .play-now-button {
+  width: 100%;
+}
+
+.name-card .play-now-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

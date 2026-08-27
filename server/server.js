@@ -30,6 +30,7 @@ io.on("connection", (socket) => {
   console.log("Player connected:", socket.id);
 
   socket.on("find_match", (player) => {
+    // Prevent the same socket from entering matchmaking twice
     const existingIndex = waitingPlayers.findIndex(
       (item) => item.socketId === socket.id
     );
@@ -38,34 +39,41 @@ io.on("connection", (socket) => {
       return;
     }
 
+    // Make sure the frontend actually sends a name
     const playerData = {
       socketId: socket.id,
-      name: player.name,
-      level: player.level,
-      avatar: player.avatar,
+      name: player?.name?.trim() || "Player",
+      level: player?.level || 1,
+      avatar: player?.avatar || "🐻",
     };
 
-    if (waitingPlayers.length > 0) {
-      const opponent = waitingPlayers.shift();
+    // Find another player who is waiting
+    const opponentIndex = waitingPlayers.findIndex(
+      (item) => item.socketId !== socket.id
+    );
+
+    if (opponentIndex !== -1) {
+      const opponent = waitingPlayers.splice(opponentIndex, 1)[0];
 
       const match = {
         player1: opponent,
         player2: playerData,
       };
 
+      // Send the match to both players
       io.to(opponent.socketId).emit("match_found", match);
       io.to(socket.id).emit("match_found", match);
 
       console.log(
-        "Match found:",
-        opponent.name,
-        "vs",
-        playerData.name
+        `Match found: ${opponent.name} vs ${playerData.name}`
       );
     } else {
+      // Nobody else is waiting
       waitingPlayers.push(playerData);
 
-      console.log("Player waiting:", playerData.name);
+      console.log(
+        `Player waiting: ${playerData.name} (${socket.id})`
+      );
     }
   });
 
@@ -75,8 +83,11 @@ io.on("connection", (socket) => {
     );
 
     if (index !== -1) {
-      waitingPlayers.splice(index, 1);
-      console.log("Player cancelled:", socket.id);
+      const removedPlayer = waitingPlayers.splice(index, 1)[0];
+
+      console.log(
+        `Player cancelled: ${removedPlayer.name}`
+      );
     }
   });
 

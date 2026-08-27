@@ -1,58 +1,136 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-
 import Lobby from "./pages/Lobby";
 import Battle from "./pages/Battle";
 import Shop from "./pages/Shop";
 import Heroes from "./pages/Heroes";
 import Rank from "./pages/Rank";
 import Friends from "./pages/Friends";
-
-const defaultPlayer = {
-  name: "PuffyBear",
-  level: 23,
-  coins: 8450,
-  gems: 1280,
-  score: 8450,
+const createDefaultPlayer = (name) => ({
+  name,
+  level: 1,
+  coins: 1000,
+  gems: 100,
+  score: 0,
+  avatar: "🐻",
   selectedHero: "puffy",
+
   heroes: {
     puffy: {
       unlocked: true,
-      level: 5,
+      level: 1,
     },
+
     bunny: {
       unlocked: true,
-      level: 3,
+      level: 1,
     },
+
     fox: {
       unlocked: true,
-      level: 2,
+      level: 1,
     },
+
     panda: {
       unlocked: false,
       level: 1,
     },
+
     kitty: {
       unlocked: false,
       level: 1,
     },
   },
+
   inventory: [],
-};
+});
 
 function App() {
   const [screen, setScreen] = useState("home");
 
   const [player, setPlayer] = useState(() => {
     const savedPlayer = localStorage.getItem("clashPlayer");
-    return savedPlayer ? JSON.parse(savedPlayer) : defaultPlayer;
+
+    return savedPlayer
+      ? JSON.parse(savedPlayer)
+      : null;
   });
 
   const [match, setMatch] = useState(null);
 
+  const [nameInput, setNameInput] = useState("");
+
   useEffect(() => {
-    localStorage.setItem("clashPlayer", JSON.stringify(player));
+    if (player) {
+      localStorage.setItem(
+        "clashPlayer",
+        JSON.stringify(player)
+      );
+    }
   }, [player]);
+
+ 
+  if (!player) {
+    const createPlayer = () => {
+      const trimmedName = nameInput.trim();
+
+      if (!trimmedName) {
+        return;
+      }
+
+      const newPlayer = createDefaultPlayer(
+        trimmedName
+      );
+
+      setPlayer(newPlayer);
+      setScreen("home");
+    };
+
+    return (
+      <div className="name-screen">
+        <div className="name-card">
+
+          <div className="name-avatar">
+            🐻
+          </div>
+
+          <p className="welcome-eyebrow">
+            WELCOME TO
+          </p>
+
+          <h1>CLASH</h1>
+
+          <p>
+            Choose your player name to enter the arena.
+          </p>
+
+          <input
+            type="text"
+            placeholder="Enter your name"
+            value={nameInput}
+            maxLength={16}
+            onChange={(e) =>
+              setNameInput(e.target.value)
+            }
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                createPlayer();
+              }
+            }}
+          />
+
+          <button
+            className="play-now-button"
+            onClick={createPlayer}
+            disabled={!nameInput.trim()}
+          >
+            ⚔️ ENTER ARENA
+          </button>
+
+        </div>
+      </div>
+    );
+  }
 
   if (screen === "shop") {
     return (
@@ -74,6 +152,8 @@ function App() {
     );
   }
 
+
+
   if (screen === "rank") {
     return (
       <Rank
@@ -92,6 +172,7 @@ function App() {
     );
   }
 
+ 
   if (screen === "lobby") {
     return (
       <Lobby
@@ -105,6 +186,7 @@ function App() {
     );
   }
 
+
   if (screen === "battle") {
     return (
       <Battle
@@ -116,19 +198,30 @@ function App() {
     );
   }
 
+
   return (
     <div className="app">
+
       <header className="topbar">
+
         <div className="profile">
-          <div className="avatar">🐻</div>
+
+          <div className="avatar">
+            {player.avatar}
+          </div>
 
           <div>
             <h3>{player.name}</h3>
-            <span>Level {player.level}</span>
+
+            <span>
+              Level {player.level}
+            </span>
           </div>
+
         </div>
 
         <div className="currencies">
+
           <div className="currency">
             ⭐ <span>{player.coins}</span>
           </div>
@@ -137,16 +230,20 @@ function App() {
             💎 <span>{player.gems}</span>
           </div>
 
-          <button className="settings">⚙</button>
+          <button className="settings">
+            ⚙
+          </button>
+
         </div>
+
       </header>
 
       <main className="home">
+
         <aside className="sidebar">
+
           <button
-            className={`menu-button ${
-              screen === "lobby" ? "active" : ""
-            }`}
+            className="menu-button"
             onClick={() => setScreen("lobby")}
           >
             🎮
@@ -184,31 +281,48 @@ function App() {
             👥
             <span>FRIENDS</span>
           </button>
+
         </aside>
 
         <section className="home-content">
+
           <div className="welcome-card">
-            <div className="welcome-decoration star">✦</div>
-            <div className="welcome-decoration flower">🌸</div>
 
-            <p className="welcome-eyebrow">WELCOME BACK</p>
+            <div className="welcome-decoration star">
+              ✦
+            </div>
 
-            <h1>READY TO CLASH?</h1>
+            <div className="welcome-decoration flower">
+              🌸
+            </div>
+
+            <p className="welcome-eyebrow">
+              WELCOME BACK
+            </p>
+
+            <h1>
+              READY TO CLASH?
+            </h1>
 
             <span>
-              Find an opponent and show them what PuffyBear can do.
+              Find an opponent and show them what{" "}
+              <strong>{player.name}</strong> can do.
             </span>
 
             <div className="home-characters">
+
               <div className="home-character left-character">
-                🐻
+                {player.avatar}
               </div>
 
-              <div className="home-core">⚡</div>
+              <div className="home-core">
+                ⚡
+              </div>
 
               <div className="home-character right-character">
                 🐰
               </div>
+
             </div>
 
             <button
@@ -217,9 +331,13 @@ function App() {
             >
               ⚔️ PLAY NOW
             </button>
+
           </div>
+
         </section>
+
       </main>
+
     </div>
   );
 }
