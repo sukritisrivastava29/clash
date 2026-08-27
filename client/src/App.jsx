@@ -59,7 +59,10 @@ function App() {
   const [match, setMatch] = useState(null);
 
   const [nameInput, setNameInput] = useState("");
-
+const changePlayer = () => {
+  localStorage.removeItem("clashPlayer");
+  setPlayer(null);
+};
   useEffect(() => {
     if (player) {
       localStorage.setItem(
@@ -230,10 +233,13 @@ function App() {
             💎 <span>{player.gems}</span>
           </div>
 
-          <button className="settings">
-            ⚙
-          </button>
-
+         <button
+  className="settings"
+  onClick={changePlayer}
+  title="Change Player"
+>
+  ⚙
+</button>
         </div>
 
       </header>

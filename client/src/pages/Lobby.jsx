@@ -108,8 +108,6 @@ const Lobby = ({ player, onBack, onBattle }) => {
         </p>
 
         <div className="players">
-
-          {/* YOU */}
           <div className="player-card you">
 
             <div className="player-character">
@@ -130,13 +128,13 @@ const Lobby = ({ player, onBack, onBattle }) => {
 
           </div>
 
-          {/* VS */}
+        
           <div className="versus">
             <div>VS</div>
             <span>✦</span>
           </div>
 
-          {/* OPPONENT */}
+       
           <div
             className={`player-card opponent ${
               searching ? "searching" : ""
@@ -223,7 +221,6 @@ const Lobby = ({ player, onBack, onBattle }) => {
           </button>
         )}
 
-        {/* CANCEL */}
         {searching && (
           <button
             className="cancel-button"
@@ -233,7 +230,6 @@ const Lobby = ({ player, onBack, onBattle }) => {
           </button>
         )}
 
-        {/* START BATTLE */}
         {opponent && (
           <button
             className="find-button"
