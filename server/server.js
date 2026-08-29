@@ -6,18 +6,24 @@ import { Server } from "socket.io";
 const app = express();
 const httpServer = createServer(app);
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 const io = new Server(httpServer, {
   cors: {
-    origin: true,
+    origin: "http://localhost:5173",
     methods: ["GET", "POST"],
     credentials: true,
   },
 });
 
-const waitingPlayers = [];
+let waitingPlayer = null;
 
 app.get("/", (req, res) => {
   res.json({
@@ -27,19 +33,11 @@ app.get("/", (req, res) => {
 });
 
 io.on("connection", (socket) => {
-  console.log("Player connected:", socket.id);
+  console.log("CONNECTED:", socket.id);
 
   socket.on("find_match", (player) => {
-    // Prevent the same socket from entering matchmaking twice
-    const existingIndex = waitingPlayers.findIndex(
-      (item) => item.socketId === socket.id
-    );
+    console.log("FIND MATCH:", socket.id, player);
 
-    if (existingIndex !== -1) {
-      return;
-    }
-
-    // Make sure the frontend actually sends a name
     const playerData = {
       socketId: socket.id,
       name: player?.name?.trim() || "Player",
@@ -47,65 +45,67 @@ io.on("connection", (socket) => {
       avatar: player?.avatar || "🐻",
     };
 
-    // Find another player who is waiting
-    const opponentIndex = waitingPlayers.findIndex(
-      (item) => item.socketId !== socket.id
-    );
+    if (waitingPlayer?.socketId === socket.id) {
+      console.log("Already waiting:", socket.id);
+      return;
+    }
 
-    if (opponentIndex !== -1) {
-      const opponent = waitingPlayers.splice(opponentIndex, 1)[0];
+    if (waitingPlayer && waitingPlayer.socketId !== socket.id) {
+      const opponent = waitingPlayer;
+
+      waitingPlayer = null;
 
       const match = {
         player1: opponent,
         player2: playerData,
       };
 
-      // Send the match to both players
+      console.log(
+        "MATCH FOUND:",
+        opponent.name,
+        "vs",
+        playerData.name
+      );
+
       io.to(opponent.socketId).emit("match_found", match);
       io.to(socket.id).emit("match_found", match);
 
-      console.log(
-        `Match found: ${opponent.name} vs ${playerData.name}`
-      );
-    } else {
-      // Nobody else is waiting
-      waitingPlayers.push(playerData);
-
-      console.log(
-        `Player waiting: ${playerData.name} (${socket.id})`
-      );
+      return;
     }
+
+    waitingPlayer = playerData;
+
+    console.log(
+      "WAITING:",
+      playerData.name,
+      playerData.socketId
+    );
   });
 
   socket.on("cancel_match", () => {
-    const index = waitingPlayers.findIndex(
-      (player) => player.socketId === socket.id
-    );
+    console.log("CANCEL MATCH:", socket.id);
 
-    if (index !== -1) {
-      const removedPlayer = waitingPlayers.splice(index, 1)[0];
-
+    if (waitingPlayer?.socketId === socket.id) {
       console.log(
-        `Player cancelled: ${removedPlayer.name}`
+        "REMOVED FROM QUEUE:",
+        waitingPlayer.name
       );
+
+      waitingPlayer = null;
     }
   });
 
   socket.on("disconnect", () => {
-    const index = waitingPlayers.findIndex(
-      (player) => player.socketId === socket.id
-    );
+    console.log("DISCONNECTED:", socket.id);
 
-    if (index !== -1) {
-      waitingPlayers.splice(index, 1);
+    if (waitingPlayer?.socketId === socket.id) {
+      waitingPlayer = null;
     }
-
-    console.log("Player disconnected:", socket.id);
   });
 });
 
 const PORT = 5000;
 
 httpServer.listen(PORT, () => {
-  console.log(`Clash server running on http://localhost:${PORT}`);
+  console.log(`CLASH SERVER RUNNING ON PORT ${PORT}`);
 });
