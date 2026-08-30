@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import "./Battle.css";
-
-const Battle = ({ onBack, match }) => {
-  const [time, setTime] = useState(60);
-  const [started, setStarted] = useState(false);
-  const [result, setResult] = useState(null);
-
-  const [player, setPlayer] = useState({
+const Battle = ({ onBack, match, player }) => {
+const [time, setTime] = useState(60);
+const [started, setStarted] = useState(false);
+const [result, setResult] = useState(null);
+const [countdown, setCountdown] = useState(3);
+  const [playerPosition, setPlayerPosition] = useState({
     x: 20,
     y: 65,
   });
@@ -44,14 +43,14 @@ const Battle = ({ onBack, match }) => {
   const [action, setAction] = useState(null);
 
   const keysRef = useRef(new Set());
-  const playerRef = useRef(player);
+  const playerRef = useRef(playerPosition);
   const opponentRef = useRef(opponent);
   const starsRef = useRef(stars);
   const resultRef = useRef(result);
 
   useEffect(() => {
-    playerRef.current = player;
-  }, [player]);
+    playerRef.current = playerPosition;
+  }, [playerPosition]);
 
   useEffect(() => {
     opponentRef.current = opponent;
@@ -65,8 +64,13 @@ const Battle = ({ onBack, match }) => {
     resultRef.current = result;
   }, [result]);
 
-  const opponentName = match?.name || "Bunny";
+ 
+  const playerName = player?.name || "Player";
+  const playerAvatar = player?.avatar || "🐻";
+
+  const opponentName = match?.name || "Opponent";
   const opponentAvatar = match?.avatar || "🐰";
+
 
   const showMessage = (text) => {
     setMessage(text);
@@ -86,32 +90,30 @@ const Battle = ({ onBack, match }) => {
 
   const distanceBetween = (a, b) => {
     return Math.sqrt(
-      Math.pow(a.x - b.x, 2) + Math.pow(a.y - b.y, 2)
+      Math.pow(a.x - b.x, 2) +
+        Math.pow(a.y - b.y, 2)
     );
   };
 
-  // =========================
-  // COUNTDOWN
-  // =========================
+ useEffect(() => {
+  let count = 3;
+  setCountdown(count);
 
-  useEffect(() => {
-    let count = 3;
+  const timer = setInterval(() => {
+    count--;
 
-    const timer = setInterval(() => {
-      count--;
+    if (count <= 0) {
+      clearInterval(timer);
+      setCountdown(0);
+      setStarted(true);
+      return;
+    }
 
-      if (count <= 0) {
-        clearInterval(timer);
-        setStarted(true);
-      }
-    }, 1000);
+    setCountdown(count);
+  }, 1000);
 
-    return () => clearInterval(timer);
-  }, []);
-
-  // =========================
-  // GAME TIMER
-  // =========================
+  return () => clearInterval(timer);
+}, []);
 
   useEffect(() => {
     if (!started || result) return;
@@ -126,7 +128,9 @@ const Battle = ({ onBack, match }) => {
 
           if (finalPlayerScore > finalOpponentScore) {
             setResult("win");
-          } else if (finalPlayerScore < finalOpponentScore) {
+          } else if (
+            finalPlayerScore < finalOpponentScore
+          ) {
             setResult("lose");
           } else {
             setResult("draw");
@@ -140,11 +144,14 @@ const Battle = ({ onBack, match }) => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [started, result, playerScore, opponentScore]);
+  }, [
+    started,
+    result,
+    playerScore,
+    opponentScore,
+  ]);
 
-  // =========================
-  // COOLDOWNS
-  // =========================
+  
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -158,10 +165,6 @@ const Battle = ({ onBack, match }) => {
 
     return () => clearInterval(timer);
   }, []);
-
-  // =========================
-  // SHIELD TIMERS
-  // =========================
 
   useEffect(() => {
     if (!playerShield) return;
@@ -183,9 +186,7 @@ const Battle = ({ onBack, match }) => {
     return () => clearTimeout(timer);
   }, [opponentShield]);
 
-  // =========================
-  // ATTACK
-  // =========================
+ 
 
   const attack = () => {
     if (
@@ -219,16 +220,23 @@ const Battle = ({ onBack, match }) => {
           const dx = prev.x - p.x;
           const dy = prev.y - p.y;
 
-          const length = Math.sqrt(dx * dx + dy * dy) || 1;
+          const length =
+            Math.sqrt(dx * dx + dy * dy) || 1;
 
           return {
             x: Math.max(
               5,
-              Math.min(95, prev.x + (dx / length) * 5)
+              Math.min(
+                95,
+                prev.x + (dx / length) * 5
+              )
             ),
             y: Math.max(
               12,
-              Math.min(82, prev.y + (dy / length) * 5)
+              Math.min(
+                82,
+                prev.y + (dy / length) * 5
+              )
             ),
           };
         });
@@ -243,9 +251,6 @@ const Battle = ({ onBack, match }) => {
     }));
   };
 
-  // =========================
-  // SPECIAL ATTACK
-  // =========================
 
   const specialAttack = () => {
     if (
@@ -279,16 +284,23 @@ const Battle = ({ onBack, match }) => {
           const dx = prev.x - p.x;
           const dy = prev.y - p.y;
 
-          const length = Math.sqrt(dx * dx + dy * dy) || 1;
+          const length =
+            Math.sqrt(dx * dx + dy * dy) || 1;
 
           return {
             x: Math.max(
               5,
-              Math.min(95, prev.x + (dx / length) * 9)
+              Math.min(
+                95,
+                prev.x + (dx / length) * 9
+              )
             ),
             y: Math.max(
               12,
-              Math.min(82, prev.y + (dy / length) * 9)
+              Math.min(
+                82,
+                prev.y + (dy / length) * 9
+              )
             ),
           };
         });
@@ -303,9 +315,7 @@ const Battle = ({ onBack, match }) => {
     }));
   };
 
-  // =========================
-  // DASH
-  // =========================
+  
 
   const dash = () => {
     if (
@@ -330,18 +340,25 @@ const Battle = ({ onBack, match }) => {
       dx = 1;
     }
 
-    const length = Math.sqrt(dx * dx + dy * dy) || 1;
+    const length =
+      Math.sqrt(dx * dx + dy * dy) || 1;
 
     triggerAction("dash");
 
-    setPlayer((prev) => ({
+    setPlayerPosition((prev) => ({
       x: Math.max(
         5,
-        Math.min(95, prev.x + (dx / length) * 13)
+        Math.min(
+          95,
+          prev.x + (dx / length) * 13
+        )
       ),
       y: Math.max(
         12,
-        Math.min(82, prev.y + (dy / length) * 13)
+        Math.min(
+          82,
+          prev.y + (dy / length) * 13
+        )
       ),
     }));
 
@@ -353,9 +370,7 @@ const Battle = ({ onBack, match }) => {
     }));
   };
 
-  // =========================
-  // SHIELD
-  // =========================
+
 
   const shield = () => {
     if (
@@ -379,9 +394,7 @@ const Battle = ({ onBack, match }) => {
     }));
   };
 
-  // =========================
-  // KEYBOARD
-  // =========================
+
 
   useEffect(() => {
     if (!started || result) return;
@@ -431,15 +444,31 @@ const Battle = ({ onBack, match }) => {
     };
 
     const handleKeyUp = (e) => {
-      keysRef.current.delete(e.key.toLowerCase());
+      keysRef.current.delete(
+        e.key.toLowerCase()
+      );
     };
 
-    window.addEventListener("keydown", handleKeyDown);
-    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener(
+      "keydown",
+      handleKeyDown
+    );
+
+    window.addEventListener(
+      "keyup",
+      handleKeyUp
+    );
 
     return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown
+      );
+
+      window.removeEventListener(
+        "keyup",
+        handleKeyUp
+      );
     };
   }, [
     started,
@@ -449,9 +478,7 @@ const Battle = ({ onBack, match }) => {
     playerShield,
   ]);
 
-  // =========================
-  // PLAYER MOVEMENT
-  // =========================
+ 
 
   useEffect(() => {
     if (!started || result) return;
@@ -459,11 +486,11 @@ const Battle = ({ onBack, match }) => {
     const movement = setInterval(() => {
       const keys = keysRef.current;
 
-      setPlayer((prev) => {
+      setPlayerPosition((prev) => {
         let x = prev.x;
         let y = prev.y;
 
-        let speed = keys.has("shift") ? 2 : 1.2;
+        const speed = keys.has("shift") ? 2 : 1.2;
 
         if (
           keys.has("w") ||
@@ -494,8 +521,14 @@ const Battle = ({ onBack, match }) => {
         }
 
         return {
-          x: Math.max(5, Math.min(95, x)),
-          y: Math.max(12, Math.min(82, y)),
+          x: Math.max(
+            5,
+            Math.min(95, x)
+          ),
+          y: Math.max(
+            12,
+            Math.min(82, y)
+          ),
         };
       });
     }, 30);
@@ -503,30 +536,38 @@ const Battle = ({ onBack, match }) => {
     return () => clearInterval(movement);
   }, [started, result]);
 
-  // =========================
-  // COLLECT ITEMS
-  // =========================
 
   const spawnItem = () => {
     const newItem = {
       id: Date.now() + Math.random(),
       x: Math.floor(Math.random() * 80) + 10,
       y: Math.floor(Math.random() * 65) + 15,
-      type: Math.random() > 0.8 ? "gem" : "star",
+      type:
+        Math.random() > 0.8
+          ? "gem"
+          : "star",
     };
 
-    setStars((prev) => [...prev, newItem]);
+    setStars((prev) => [
+      ...prev,
+      newItem,
+    ]);
   };
 
   const collectItem = (item, isPlayer) => {
     setStars((prev) =>
-      prev.filter((star) => star.id !== item.id)
+      prev.filter(
+        (star) => star.id !== item.id
+      )
     );
 
-    const points = item.type === "star" ? 5 : 15;
+    const points =
+      item.type === "star" ? 5 : 15;
 
     if (isPlayer) {
-      setPlayerScore((prev) => prev + points);
+      setPlayerScore((prev) =>
+        prev + points
+      );
 
       showMessage(
         item.type === "star"
@@ -534,7 +575,9 @@ const Battle = ({ onBack, match }) => {
           : "+15 💎"
       );
     } else {
-      setOpponentScore((prev) => prev + points);
+      setOpponentScore((prev) =>
+        prev + points
+      );
     }
 
     setTimeout(() => {
@@ -555,35 +598,47 @@ const Battle = ({ onBack, match }) => {
         collectItem(item, true);
       }
     });
-  }, [player, stars, started, result]);
+  }, [
+    playerPosition,
+    stars,
+    started,
+    result,
+  ]);
 
-  // =========================
-  // BUNNY AI
-  // =========================
+ 
 
   useEffect(() => {
     if (!started || result) return;
 
     const ai = setInterval(() => {
       setOpponent((prev) => {
-        const currentStars = starsRef.current;
+        const currentStars =
+          starsRef.current;
 
-        const target = currentStars.reduce(
-          (closest, item) => {
-            if (!closest) return item;
+        const target =
+          currentStars.reduce(
+            (closest, item) => {
+              if (!closest) return item;
 
-            const currentDistance =
-              distanceBetween(prev, item);
+              const currentDistance =
+                distanceBetween(
+                  prev,
+                  item
+                );
 
-            const closestDistance =
-              distanceBetween(prev, closest);
+              const closestDistance =
+                distanceBetween(
+                  prev,
+                  closest
+                );
 
-            return currentDistance < closestDistance
-              ? item
-              : closest;
-          },
-          null
-        );
+              return currentDistance <
+                closestDistance
+                ? item
+                : closest;
+            },
+            null
+          );
 
         let x = prev.x;
         let y = prev.y;
@@ -597,8 +652,14 @@ const Battle = ({ onBack, match }) => {
         }
 
         return {
-          x: Math.max(5, Math.min(95, x)),
-          y: Math.max(12, Math.min(82, y)),
+          x: Math.max(
+            5,
+            Math.min(95, x)
+          ),
+          y: Math.max(
+            12,
+            Math.min(82, y)
+          ),
         };
       });
     }, 80);
@@ -606,9 +667,7 @@ const Battle = ({ onBack, match }) => {
     return () => clearInterval(ai);
   }, [started, result]);
 
-  // =========================
-  // BUNNY COLLECTS
-  // =========================
+ 
 
   useEffect(() => {
     if (!started || result) return;
@@ -623,11 +682,14 @@ const Battle = ({ onBack, match }) => {
         collectItem(item, false);
       }
     });
-  }, [opponent, stars, started, result]);
+  }, [
+    opponent,
+    stars,
+    started,
+    result,
+  ]);
 
-  // =========================
-  // BUNNY ATTACK
-  // =========================
+
 
   useEffect(() => {
     if (!started || result) return;
@@ -636,7 +698,10 @@ const Battle = ({ onBack, match }) => {
       const p = playerRef.current;
       const o = opponentRef.current;
 
-      const distance = distanceBetween(p, o);
+      const distance = distanceBetween(
+        p,
+        o
+      );
 
       if (distance < 13) {
         triggerAction("enemyAttack");
@@ -650,29 +715,34 @@ const Battle = ({ onBack, match }) => {
           Math.max(0, prev - 8)
         );
 
-        showMessage("🐰 BUNNY HIT!");
+        showMessage(
+          `🐰 ${opponentName} HIT!`
+        );
       }
     }, 1800);
 
-    return () => clearInterval(aiAttack);
-  }, [started, result, playerShield]);
+    return () =>
+      clearInterval(aiAttack);
+  }, [
+    started,
+    result,
+    playerShield,
+    opponentName,
+  ]);
 
-  // =========================
-  // RESTART
-  // =========================
+  
 
   const restartGame = () => {
     window.location.reload();
   };
 
-  // =========================
-  // UI
-  // =========================
+ 
 
   return (
     <div className="battle">
 
       <header className="battle-header">
+
         <button
           className="battle-back"
           onClick={onBack}
@@ -687,41 +757,56 @@ const Battle = ({ onBack, match }) => {
         <div className="battle-timer">
           ⏱ {time}
         </div>
+
       </header>
+
+     
 
       <div className="battle-scoreboard">
 
+     
+
         <div className="battle-player you">
+
           <div className="battle-avatar">
-            🐻
+            {playerAvatar}
           </div>
 
           <div>
             <span>YOU</span>
-            <strong>PuffyBear</strong>
+
+            <strong>
+              {playerName}
+            </strong>
 
             <div className="health-bar">
+
               <div
                 className="health-fill"
                 style={{
                   width: `${playerHealth}%`,
                 }}
               />
+
             </div>
           </div>
 
           <b>{playerScore}</b>
+
         </div>
+
 
         <div className="battle-vs">
           VS
         </div>
 
+       
         <div className="battle-player enemy">
 
           <b>{opponentScore}</b>
 
           <div>
+
             <span>OPPONENT</span>
 
             <strong>
@@ -729,13 +814,16 @@ const Battle = ({ onBack, match }) => {
             </strong>
 
             <div className="health-bar">
+
               <div
                 className="health-fill"
                 style={{
                   width: `${opponentHealth}%`,
                 }}
               />
+
             </div>
+
           </div>
 
           <div className="battle-avatar">
@@ -743,7 +831,10 @@ const Battle = ({ onBack, match }) => {
           </div>
 
         </div>
+
       </div>
+
+    
 
       <main className="battle-arena">
 
@@ -767,6 +858,7 @@ const Battle = ({ onBack, match }) => {
           🌷
         </div>
 
+   
         {stars.map((item) => (
           <div
             key={item.id}
@@ -782,20 +874,28 @@ const Battle = ({ onBack, match }) => {
           </div>
         ))}
 
+      
         <div
           className={`battle-character player ${
-            playerShield ? "shielded" : ""
+            playerShield
+              ? "shielded"
+              : ""
           } ${
-            action === "dash" ? "dashing" : ""
+            action === "dash"
+              ? "dashing"
+              : ""
           }`}
           style={{
-            left: `${player.x}%`,
-            top: `${player.y}%`,
+            left: `${playerPosition.x}%`,
+            top: `${playerPosition.y}%`,
           }}
         >
-          🐻
 
-          <span>PuffyBear</span>
+          {playerAvatar}
+
+          <span>
+            {playerName}
+          </span>
 
           {playerShield && (
             <div className="shield-effect">
@@ -814,20 +914,28 @@ const Battle = ({ onBack, match }) => {
               💥
             </div>
           )}
+
         </div>
+
+       
 
         <div
           className={`battle-character opponent ${
-            opponentShield ? "shielded" : ""
+            opponentShield
+              ? "shielded"
+              : ""
           }`}
           style={{
             left: `${opponent.x}%`,
             top: `${opponent.y}%`,
           }}
         >
+
           {opponentAvatar}
 
-          <span>{opponentName}</span>
+          <span>
+            {opponentName}
+          </span>
 
           {opponentShield && (
             <div className="shield-effect">
@@ -840,7 +948,10 @@ const Battle = ({ onBack, match }) => {
               ⚡
             </div>
           )}
+
         </div>
+
+ 
 
         {message && (
           <div className="battle-message">
@@ -848,13 +959,16 @@ const Battle = ({ onBack, match }) => {
           </div>
         )}
 
+
         {!started && !result && (
           <div className="battle-overlay">
+
             <div className="countdown-number">
-              3
+             {countdown}
             </div>
 
             <p>GET READY!</p>
+
           </div>
         )}
 
@@ -883,7 +997,9 @@ const Battle = ({ onBack, match }) => {
 
             <div className="result-buttons">
 
-              <button onClick={restartGame}>
+              <button
+                onClick={restartGame}
+              >
                 PLAY AGAIN
               </button>
 
@@ -895,10 +1011,13 @@ const Battle = ({ onBack, match }) => {
               </button>
 
             </div>
+
           </div>
         )}
 
       </main>
+
+  
 
       {!result && (
         <div className="battle-controls">
@@ -951,6 +1070,7 @@ const Battle = ({ onBack, match }) => {
               }
             >
               ⚡
+
               <span>
                 {cooldowns.attack > 0
                   ? cooldowns.attack
@@ -966,6 +1086,7 @@ const Battle = ({ onBack, match }) => {
               }
             >
               💥
+
               <span>
                 {cooldowns.special > 0
                   ? cooldowns.special
@@ -981,6 +1102,7 @@ const Battle = ({ onBack, match }) => {
               }
             >
               💨
+
               <span>
                 {cooldowns.dash > 0
                   ? cooldowns.dash
@@ -996,6 +1118,7 @@ const Battle = ({ onBack, match }) => {
               }
             >
               🛡️
+
               <span>
                 {cooldowns.shield > 0
                   ? cooldowns.shield
@@ -1004,6 +1127,7 @@ const Battle = ({ onBack, match }) => {
             </button>
 
           </div>
+
         </div>
       )}
 
