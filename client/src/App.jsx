@@ -1,47 +1,81 @@
 import { useEffect, useState } from "react";
 import "./App.css";
+import SelectCharacter from "./pages/SelectCharacter";
 import Lobby from "./pages/Lobby";
 import Battle from "./pages/Battle";
 import Shop from "./pages/Shop";
 import Heroes from "./pages/Heroes";
 import Rank from "./pages/Rank";
 import Friends from "./pages/Friends";
+
+const heroData = {
+  puffy: {
+    id: "puffy",
+    name: "Puffy",
+    role: "The Brawler",
+    avatar: "🐻",
+    color: "#ffb703",
+  },
+  bunny: {
+    id: "bunny",
+    name: "Bunny",
+    role: "The Speedster",
+    avatar: "🐰",
+    color: "#ff8fab",
+  },
+  fox: {
+    id: "fox",
+    name: "Fox",
+    role: "The Assassin",
+    avatar: "🦊",
+    color: "#ff6b35",
+  },
+  panda: {
+    id: "panda",
+    name: "Panda",
+    role: "The Guardian",
+    avatar: "🐼",
+    color: "#4caf50",
+  },
+  kitty: {
+    id: "kitty",
+    name: "Kitty",
+    role: "The Mage",
+    avatar: "🐱",
+    color: "#9b5de5",
+  },
+};
+
 const createDefaultPlayer = (name) => ({
   name,
   level: 1,
   coins: 1000,
   gems: 100,
   score: 0,
-  avatar: "🐻",
+  avatar: heroData.puffy.avatar,
   selectedHero: "puffy",
-
   heroes: {
     puffy: {
       unlocked: true,
       level: 1,
     },
-
     bunny: {
       unlocked: true,
       level: 1,
     },
-
     fox: {
       unlocked: true,
       level: 1,
     },
-
     panda: {
       unlocked: false,
       level: 1,
     },
-
     kitty: {
       unlocked: false,
       level: 1,
     },
   },
-
   inventory: [],
 });
 
@@ -51,18 +85,18 @@ function App() {
   const [player, setPlayer] = useState(() => {
     const savedPlayer = localStorage.getItem("clashPlayer");
 
-    return savedPlayer
-      ? JSON.parse(savedPlayer)
-      : null;
+    return savedPlayer ? JSON.parse(savedPlayer) : null;
   });
 
   const [match, setMatch] = useState(null);
-
   const [nameInput, setNameInput] = useState("");
-const changePlayer = () => {
-  localStorage.removeItem("clashPlayer");
-  setPlayer(null);
-};
+
+  const changePlayer = () => {
+    localStorage.removeItem("clashPlayer");
+    setPlayer(null);
+    setScreen("home");
+  };
+
   useEffect(() => {
     if (player) {
       localStorage.setItem(
@@ -72,7 +106,6 @@ const changePlayer = () => {
     }
   }, [player]);
 
- 
   if (!player) {
     const createPlayer = () => {
       const trimmedName = nameInput.trim();
@@ -81,9 +114,7 @@ const changePlayer = () => {
         return;
       }
 
-      const newPlayer = createDefaultPlayer(
-        trimmedName
-      );
+      const newPlayer = createDefaultPlayer(trimmedName);
 
       setPlayer(newPlayer);
       setScreen("home");
@@ -92,7 +123,6 @@ const changePlayer = () => {
     return (
       <div className="name-screen">
         <div className="name-card">
-
           <div className="name-avatar">
             🐻
           </div>
@@ -129,9 +159,26 @@ const changePlayer = () => {
           >
             ⚔️ ENTER ARENA
           </button>
-
         </div>
       </div>
+    );
+  }
+
+  if (screen === "select") {
+    return (
+      <SelectCharacter
+        player={player}
+        onBack={() => setScreen("home")}
+        onSelect={(character) => {
+          setPlayer((currentPlayer) => ({
+            ...currentPlayer,
+            selectedHero: character.id,
+            avatar: character.avatar,
+          }));
+
+          setScreen("lobby");
+        }}
+      />
     );
   }
 
@@ -155,8 +202,6 @@ const changePlayer = () => {
     );
   }
 
-
-
   if (screen === "rank") {
     return (
       <Rank
@@ -175,12 +220,11 @@ const changePlayer = () => {
     );
   }
 
- 
   if (screen === "lobby") {
     return (
       <Lobby
         player={player}
-        onBack={() => setScreen("home")}
+        onBack={() => setScreen("select")}
         onBattle={(matchData) => {
           setMatch(matchData);
           setScreen("battle");
@@ -188,7 +232,6 @@ const changePlayer = () => {
       />
     );
   }
-
 
   if (screen === "battle") {
     return (
@@ -201,30 +244,23 @@ const changePlayer = () => {
     );
   }
 
-
   return (
     <div className="app">
-
       <header className="topbar">
-
         <div className="profile">
-
           <div className="avatar">
             {player.avatar}
           </div>
 
           <div>
             <h3>{player.name}</h3>
-
             <span>
               Level {player.level}
             </span>
           </div>
-
         </div>
 
         <div className="currencies">
-
           <div className="currency">
             ⭐ <span>{player.coins}</span>
           </div>
@@ -233,24 +269,21 @@ const changePlayer = () => {
             💎 <span>{player.gems}</span>
           </div>
 
-         <button
-  className="settings"
-  onClick={changePlayer}
-  title="Change Player"
->
-  ⚙
-</button>
+          <button
+            className="settings"
+            onClick={changePlayer}
+            title="Change Player"
+          >
+            ⚙
+          </button>
         </div>
-
       </header>
 
       <main className="home">
-
         <aside className="sidebar">
-
           <button
             className="menu-button"
-            onClick={() => setScreen("lobby")}
+            onClick={() => setScreen("select")}
           >
             🎮
             <span>PLAY</span>
@@ -287,13 +320,10 @@ const changePlayer = () => {
             👥
             <span>FRIENDS</span>
           </button>
-
         </aside>
 
         <section className="home-content">
-
           <div className="welcome-card">
-
             <div className="welcome-decoration star">
               ✦
             </div>
@@ -316,7 +346,6 @@ const changePlayer = () => {
             </span>
 
             <div className="home-characters">
-
               <div className="home-character left-character">
                 {player.avatar}
               </div>
@@ -328,22 +357,17 @@ const changePlayer = () => {
               <div className="home-character right-character">
                 🐰
               </div>
-
             </div>
 
             <button
               className="play-now-button"
-              onClick={() => setScreen("lobby")}
+              onClick={() => setScreen("select")}
             >
               ⚔️ PLAY NOW
             </button>
-
           </div>
-
         </section>
-
       </main>
-
     </div>
   );
 }

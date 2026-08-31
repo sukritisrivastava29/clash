@@ -9,7 +9,6 @@ const socket = io("http://localhost:5000", {
 
 const playerId =
   localStorage.getItem("clash_player_id") || crypto.randomUUID();
-
 localStorage.setItem("clash_player_id", playerId);
 
 const Lobby = ({ player, onBack, onBattle }) => {
@@ -60,13 +59,12 @@ const Lobby = ({ player, onBack, onBattle }) => {
 
       setSearching(true);
       setOpponent(null);
-
-      socket.emit("find_match", {
-        playerId,
-        name: player.name,
-        level: player.level || 1,
-        avatar: player.avatar || "🐻",
-      });
+    socket.emit("find_match", {
+  name: player.name,
+  level: player.level || 1,
+  avatar: player.avatar || "🐻",
+  selectedHero: player.selectedHero || "puffy",
+});
     };
 
     if (!socket.connected) {
