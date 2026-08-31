@@ -1,170 +1,260 @@
 .choose-battle {
-min-height: 100vh;
-padding: 40px 7%;
-background: #0d0d12;
-color: white;
-box-sizing: border-box;
+  min-height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 42px 7% 70px;
+  background: #f9f0ea;
+  color: #76598f;
 }
 
 .choose-battle-header {
-display: flex;
-align-items: flex-start;
-gap: 40px;
-margin-bottom: 70px;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 65px;
 }
 
 .back-button {
-border: none;
-background: transparent;
-color: #aaa;
-font-size: 13px;
-font-weight: 700;
-letter-spacing: 1.5px;
-cursor: pointer;
-padding: 10px 0;
-transition: 0.2s ease;
+  position: absolute;
+  left: 0;
+  top: 25px;
+  border: none;
+  background: transparent;
+  color: #76598f;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+}
+
+.back-button::after {
+  content: "";
+  position: absolute;
+  left: -5px;
+  right: -5px;
+  bottom: -10px;
+  height: 5px;
+  background: #cdb9e5;
+  border-radius: 50%;
+  transform: rotate(-3deg);
 }
 
 .back-button:hover {
-color: white;
-transform: translateX(-3px);
+  transform: translateX(-4px);
+}
+
+.choose-title {
+  width: 100%;
+  text-align: center;
 }
 
 .choose-title p {
-margin: 0 0 8px;
-color: #ffb703;
-font-size: 12px;
-font-weight: 800;
-letter-spacing: 3px;
+  margin: 0 0 12px;
+  color: #8a6aa8;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 3px;
 }
 
 .choose-title h1 {
-margin: 0;
-font-size: clamp(32px, 5vw, 64px);
-font-weight: 900;
-letter-spacing: -2px;
+  margin: 0;
+  color: #76598f;
+  font-size: clamp(42px, 5vw, 68px);
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -3px;
 }
 
 .battle-modes {
-max-width: 1000px;
-margin: 0 auto;
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 24px;
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
 }
 
 .battle-mode {
-position: relative;
-min-height: 360px;
-padding: 36px;
-border: 1px solid rgba(255, 255, 255, 0.12);
-border-radius: 24px;
-color: white;
-text-align: left;
-cursor: pointer;
-overflow: hidden;
-transition: transform 0.25s ease, border-color 0.25s ease;
-}
+  position: relative;
+  min-height: 390px;
+  padding: 48px;
+  box-sizing: border-box;
 
-.battle-mode::after {
-content: "";
-position: absolute;
-width: 180px;
-height: 180px;
-right: -60px;
-bottom: -70px;
-border-radius: 50%;
-opacity: 0.12;
+  border: 5px solid #ffffff;
+  border-radius: 30px;
+
+  color: #76598f;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+
+  font-family: inherit;
+
+  background: #d8c8ee;
+
+  box-shadow:
+    0 8px 0 #c5a9df,
+    0 14px 25px rgba(118, 89, 143, 0.08);
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
 .battle-mode:hover {
-transform: translateY(-8px);
-border-color: rgba(255, 255, 255, 0.35);
-}
+  transform: translateY(-7px);
 
-.computer-mode {
-background: linear-gradient(145deg, #211b0d, #121217);
-}
-
-.computer-mode::after {
-background: #ffb703;
-}
-
-.multiplayer-mode {
-background: linear-gradient(145deg, #171323, #101015);
-}
-
-.multiplayer-mode::after {
-background: #9b5de5;
+  box-shadow:
+    0 14px 0 #c5a9df,
+    0 20px 30px rgba(118, 89, 143, 0.12);
 }
 
 .mode-icon {
-width: 72px;
-height: 72px;
-display: flex;
-align-items: center;
-justify-content: center;
-border-radius: 20px;
-background: rgba(255, 255, 255, 0.08);
-font-size: 38px;
-margin-bottom: 70px;
+  width: 82px;
+  height: 82px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255, 255, 255, 0.55);
+  border: 4px solid #ffffff;
+  border-radius: 22px;
+
+  font-size: 40px;
+  margin-bottom: 65px;
+
+  box-shadow: 0 5px 0 rgba(118, 89, 143, 0.12);
 }
 
 .mode-info {
-max-width: 430px;
+  position: relative;
+  z-index: 2;
 }
 
 .mode-label {
-color: #999;
-font-size: 11px;
-font-weight: 800;
-letter-spacing: 2px;
+  display: block;
+  margin-bottom: 8px;
+
+  color: #8a6aa8;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 2.5px;
 }
 
 .mode-info h2 {
-margin: 8px 0 12px;
-font-size: 30px;
-font-weight: 900;
+  margin: 0 0 14px;
+
+  color: #76598f;
+  font-size: 34px;
+  font-weight: 900;
+  letter-spacing: -1px;
 }
 
 .mode-info p {
-margin: 0;
-max-width: 320px;
-color: #aaa;
-font-size: 14px;
-line-height: 1.6;
+  max-width: 350px;
+  margin: 0;
+
+  color: #816c91;
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 600;
+}
+
+.battle-mode::after {
+  content: "";
+
+  position: absolute;
+  width: 210px;
+  height: 210px;
+
+  right: -65px;
+  bottom: -75px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .mode-arrow {
-position: absolute;
-right: 30px;
-bottom: 27px;
-font-size: 28px;
-transition: transform 0.2s ease;
+  position: absolute;
+  right: 38px;
+  bottom: 28px;
+
+  z-index: 3;
+
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffd45c;
+  border: 4px solid #ffffff;
+  border-radius: 50%;
+
+  color: #76598f;
+  font-size: 28px;
+  font-weight: 900;
+
+  box-shadow: 0 5px 0 #e4b83d;
+
+  transition: transform 0.25s ease;
 }
 
 .battle-mode:hover .mode-arrow {
-transform: translateX(6px);
+  transform: translateX(7px);
 }
 
-@media (max-width: 750px) {
-.choose-battle {
-padding: 25px 20px;
+@media (max-width: 800px) {
+  .choose-battle {
+    padding: 30px 22px 50px;
+  }
+
+  .choose-battle-header {
+    margin-bottom: 50px;
+  }
+
+  .choose-title {
+    padding-left: 50px;
+  }
+
+  .choose-title h1 {
+    font-size: 42px;
+  }
+
+  .battle-modes {
+    grid-template-columns: 1fr;
+  }
+
+  .battle-mode {
+    min-height: 320px;
+    padding: 35px 30px;
+  }
+
+  .mode-icon {
+    margin-bottom: 45px;
+  }
 }
 
-.choose-battle-header {
-margin-bottom: 40px;
-}
+@media (max-width: 500px) {
+  .choose-title h1 {
+    font-size: 34px;
+    letter-spacing: -1.5px;
+  }
 
-.battle-modes {
-grid-template-columns: 1fr;
-}
+  .choose-title p {
+    font-size: 11px;
+  }
 
-.battle-mode {
-min-height: 300px;
-}
+  .battle-mode {
+    min-height: 290px;
+  }
 
-.mode-icon {
-margin-bottom: 45px;
-}
+  .mode-info h2 {
+    font-size: 28px;
+  }
 }
