@@ -2,7 +2,7 @@ import express from "express";
 import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
-
+import { exec } from "child_process";
 const app = express();
 const httpServer = createServer(app);
 
@@ -122,6 +122,21 @@ io.on("connection", (socket) => {
 
 const PORT = 5000;
 
-httpServer.listen(PORT, () => {
-  console.log(`CLASH SERVER RUNNING ON PORT ${PORT}`);
+const startServer = () => {
+  httpServer.listen(PORT, () => {
+    console.log(`CLASH SERVER RUNNING ON PORT ${PORT}`);
+  });
+};
+
+httpServer.on("error", (error) => {
+  if (error.code === "EADDRINUSE") {
+    console.log(`Port ${PORT} is already in use.`);
+    console.log("The Clash server may already be running.");
+    process.exit(1);
+  }
+
+  console.error(error);
+  process.exit(1);
 });
+
+startServer();

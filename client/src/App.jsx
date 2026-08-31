@@ -282,13 +282,13 @@ if (screen === "select") {
 
       <main className="home">
         <aside className="sidebar">
-          <button
-            className="menu-button"
-            onClick={() => setScreen("select")}
-          >
-            🎮
-            <span>PLAY</span>
-          </button>
+        <button
+  className="menu-button"
+  onClick={() => setScreen("lobby")}
+>
+  🎮
+  <span>PLAY</span>
+</button>
 
           <button
             className="menu-button"
@@ -362,7 +362,7 @@ if (screen === "select") {
 
             <button
               className="play-now-button"
-              onClick={() => setScreen("select")}
+              onClick={() => setScreen("lobby")}
             >
               ⚔️ PLAY NOW
             </button>
