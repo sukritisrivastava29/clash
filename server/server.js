@@ -25,6 +25,14 @@ const io = new Server(httpServer, {
 
 let waitingPlayer = null;
 
+const heroes = {
+  puffy: "🐻",
+  bunny: "🐰",
+  fox: "🦊",
+  panda: "🐼",
+  kitty: "🐱",
+};
+
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
@@ -42,7 +50,9 @@ io.on("connection", (socket) => {
       socketId: socket.id,
       name: player?.name?.trim() || "Player",
       level: player?.level || 1,
-      avatar: player?.avatar || "🐻",
+      selectedHero: player?.selectedHero || "puffy",
+      avatar:
+        heroes[player?.selectedHero] || "🐻",
     };
 
     if (waitingPlayer?.socketId === socket.id) {
@@ -50,7 +60,10 @@ io.on("connection", (socket) => {
       return;
     }
 
-    if (waitingPlayer && waitingPlayer.socketId !== socket.id) {
+    if (
+      waitingPlayer &&
+      waitingPlayer.socketId !== socket.id
+    ) {
       const opponent = waitingPlayer;
 
       waitingPlayer = null;
@@ -67,8 +80,15 @@ io.on("connection", (socket) => {
         playerData.name
       );
 
-      io.to(opponent.socketId).emit("match_found", match);
-      io.to(socket.id).emit("match_found", match);
+      io.to(opponent.socketId).emit(
+        "match_found",
+        match
+      );
+
+      io.to(socket.id).emit(
+        "match_found",
+        match
+      );
 
       return;
     }
@@ -78,6 +98,7 @@ io.on("connection", (socket) => {
     console.log(
       "WAITING:",
       playerData.name,
+      playerData.selectedHero,
       playerData.socketId
     );
   });
@@ -86,11 +107,6 @@ io.on("connection", (socket) => {
     console.log("CANCEL MATCH:", socket.id);
 
     if (waitingPlayer?.socketId === socket.id) {
-      console.log(
-        "REMOVED FROM QUEUE:",
-        waitingPlayer.name
-      );
-
       waitingPlayer = null;
     }
   });
