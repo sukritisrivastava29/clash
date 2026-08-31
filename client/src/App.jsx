@@ -7,7 +7,7 @@ import Shop from "./pages/Shop";
 import Heroes from "./pages/Heroes";
 import Rank from "./pages/Rank";
 import Friends from "./pages/Friends";
-
+import ChooseBattle from "./pages/ChooseBattle";
 const heroData = {
   puffy: {
     id: "puffy",
@@ -81,16 +81,12 @@ const createDefaultPlayer = (name) => ({
 
 function App() {
   const [screen, setScreen] = useState("home");
-
   const [player, setPlayer] = useState(() => {
     const savedPlayer = localStorage.getItem("clashPlayer");
-
     return savedPlayer ? JSON.parse(savedPlayer) : null;
   });
-
   const [match, setMatch] = useState(null);
   const [nameInput, setNameInput] = useState("");
-
   const changePlayer = () => {
     localStorage.removeItem("clashPlayer");
     setPlayer(null);
@@ -113,9 +109,7 @@ function App() {
       if (!trimmedName) {
         return;
       }
-
       const newPlayer = createDefaultPlayer(trimmedName);
-
       setPlayer(newPlayer);
       setScreen("home");
     };
@@ -221,6 +215,20 @@ if (screen === "select") {
     );
   }
 
+  if (screen === "choose-battle") {
+  return (
+    <ChooseBattle
+      onBack={() => setScreen("home")}
+      onComputer={() => {
+        setMatch({
+          mode: "computer",
+        });
+        setScreen("battle");
+      }}
+      onMultiplayer={() => setScreen("lobby")}
+    />
+  );
+}
   if (screen === "lobby") {
     return (
       <Lobby
@@ -284,7 +292,7 @@ if (screen === "select") {
         <aside className="sidebar">
         <button
   className="menu-button"
-  onClick={() => setScreen("lobby")}
+  onClick={() => setScreen("choose-battle")}
 >
   🎮
   <span>PLAY</span>
@@ -362,7 +370,7 @@ if (screen === "select") {
 
             <button
               className="play-now-button"
-              onClick={() => setScreen("lobby")}
+              onClick={() => setScreen("choose-battle")}
             >
               ⚔️ PLAY NOW
             </button>
