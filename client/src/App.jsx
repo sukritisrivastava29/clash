@@ -164,23 +164,24 @@ function App() {
     );
   }
 
-  if (screen === "select") {
-    return (
-      <SelectCharacter
-        player={player}
-        onBack={() => setScreen("home")}
-        onSelect={(character) => {
-          setPlayer((currentPlayer) => ({
-            ...currentPlayer,
-            selectedHero: character.id,
-            avatar: character.avatar,
-          }));
 
-          setScreen("lobby");
-        }}
-      />
-    );
-  }
+if (screen === "select") {
+  return (
+    <SelectCharacter
+      player={player}
+      onBack={() => setScreen("home")}
+      onSelect={(selectedHero) => {
+        setPlayer((prev) => ({
+          ...prev,
+          selectedHero: selectedHero.id,
+          avatar: selectedHero.avatar,
+        }));
+
+        setScreen("home");
+      }}
+    />
+  );
+}
 
   if (screen === "shop") {
     return (
@@ -297,13 +298,13 @@ function App() {
             <span>SHOP</span>
           </button>
 
-          <button
-            className="menu-button"
-            onClick={() => setScreen("heroes")}
-          >
-            🐻
-            <span>HEROES</span>
-          </button>
+         <button
+  className="menu-button"
+  onClick={() => setScreen("select")}
+>
+  {player.avatar}
+  <span>HEROES</span>
+</button>
 
           <button
             className="menu-button"
